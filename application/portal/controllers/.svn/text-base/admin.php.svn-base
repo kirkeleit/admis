@@ -1,0 +1,97 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+class Admin extends CI_Controller {
+
+  public function index() {
+    redirect('/admin/sider');
+  }
+
+  public function sider() {
+    $data['Sider'] = $this->Dadas_model->sider();
+    $this->template->load('standard','admin/sider',$data);
+  }
+
+  public function nyside() {
+    $this->form_validation->set_rules('Navn','Navn','required|trim');
+    $this->form_validation->set_rules('SizeH','SizeH','required|numeric');
+    $this->form_validation->set_rules('SizeW','SizeW','required|numeric');
+    $this->form_validation->set_rules('Beskrivelse','Beskrivelse','trim');
+    if ($this->form_validation->run() == TRUE) {
+      $side['Navn'] = $this->input->post('Navn');
+      $side['SizeW'] = $this->input->post('SizeW');
+      $side['SizeH'] = $this->input->post('SizeH');
+      $side['Beskrivelse'] = $this->input->post('Beskrivelse');
+      $this->Dadas_model->nyside($side);
+      unset($side);
+      redirect('/admin/sider');
+    } else {
+      $this->template->load('standard','admin/nyside');
+    }
+  }
+
+  public function endreside() {
+    $this->form_validation->set_rules('Navn','Navn','required|trim');
+    $this->form_validation->set_rules('SizeH','Høyde','required|numeric');
+    $this->form_validation->set_rules('SizeW','Brede','required|numeric');
+    $this->form_validation->set_rules('Beskrivelse','Beskrivelse','trim');
+    if ($this->form_validation->run() == TRUE) {
+      $side['ID'] = $this->uri->segment(3);
+      $side['Navn'] = $this->input->post('Navn');
+      $side['SizeW'] = $this->input->post('SizeW');
+      $side['SizeH'] = $this->input->post('SizeH');
+      $side['Beskrivelse'] = $this->input->post('Beskrivelse');
+      $this->Dadas_model->endreside($side);
+      unset($side);
+      redirect('/admin/sider');
+    } else {
+      $data['Side'] = $this->Dadas_model->side($this->uri->segment(3));
+      $this->template->load('standard','admin/endreside',$data);
+    }
+
+  }
+
+  public function sideeditor() {
+    $data['Side'] = $this->Dadas_model->side($this->uri->segment(3));
+    $this->load->view('admin/sideeditor',$data);
+  }
+
+  public function elementer() {
+    $data['Elementer'] = $this->Dadas_model->elementer();
+    $this->template->load('standard','admin/elementer',$data);
+  }
+
+  public function endreelement() {
+    $this->form_validation->set_rules('ID','ID','required');
+    if ($this->form_validation->run() == TRUE) {
+      $element['ID'] = $this->input->post('ID');
+      $element['SideID'] = $this->input->post('SideID');
+      $element['TypeID'] = $this->input->post('TypeID');
+      $element['Tittel'] = $this->input->post('Tittel');
+      $element['MVerdi'] = $this->input->post('MVerdi');
+      $element['MVerdiType'] = $this->input->post('MVerdiType');
+      $element['PosX'] = $this->input->post('PosX');
+      $element['PosY'] = $this->input->post('PosY');
+      $element['SizeH'] = $this->input->post('SizeH');
+      $element['SizeW'] = $this->input->post('SizeW');
+      print_r($element);
+      $this->Dadas_model->lagreelement($element);
+      redirect('/admin/elementer/'.$element['SideID']);
+    } else {
+      $data['Element'] = $this->Dadas_model->element($this->uri->segment(3));
+      $this->template->load('standard','admin/endreelement',$data);
+    }
+  }
+
+  public function slettelement() {
+    $this->Dadas_model->slettelement($this->uri->segment(3));
+    redirect('/admin/elementer/');
+  }
+
+  public function slettside() {
+    $this->Dadas_model->slettside($this->uri->segment(3));
+    redirect('/admin/sider/');
+  }
+}
+
+/* End of file admin.php */
+/* Location: ./application/controllers/admin.php */

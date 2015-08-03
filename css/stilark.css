@@ -1,0 +1,48 @@
+BODY {
+  background-color: white;
+  padding: 0px;
+  margin: 0px;
+  font-family: Verdana;
+  line-height: 1.5em;
+}
+
+b {
+  font-size: 110%;
+}
+
+em {
+  color: red;
+}
+
+
+#Toppmeny {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  background: #EAEAEA;
+  height: 26px;
+  border-bottom: 3px solid #C00000;
+}
+
+#Sidemeny {
+  position: fixed;
+  top: 38px;
+  left: 10px;
+  width: 220px;
+  background: #D8D8D8;
+  border-radius: 5px;
+  border: 1px solid #989898;
+  padding-top: 8px;
+  padding-bottom: 12px;
+}
+
+#Innhold {
+  position: fixed;
+  top: 29px;
+  left: 240px;
+  right: 0px;
+  bottom: 0px;
+  overflow: auto;
+  padding: 10px;
+}

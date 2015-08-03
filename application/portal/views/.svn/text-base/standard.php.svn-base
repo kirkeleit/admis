@@ -1,0 +1,40 @@
+﻿<!doctype html>
+<html lang="no">
+<head>
+  <meta http-equiv="cache-control" content="no-cache" />
+  <meta http-equiv="pragma" content="no-cache" />
+  <meta charset="utf-8" />
+  <title>DADAS WEB ADMIN</title>
+  <link href="/css/stilark.css" rel="stylesheet" />
+  <link href="/css/ui-lightness/jquery-ui-1.10.3.custom.css" rel="stylesheet" />
+  <script src="/js/jquery-1.10.2.js"></script>
+  <script src="/js/jquery-ui-1.10.3.custom.js"></script>
+</head>
+<body>
+
+<div id="SideMeny">
+<table>
+  <tr>
+    <td><a href="<?php echo site_url('admin/nyside'); ?>">Ny side</a></td>
+  </tr>
+  <tr>
+    <td><a href="<?php echo site_url('admin/sider'); ?>">Sider</a></td>
+  </tr>
+  <tr>
+    <td><a href="<?php echo site_url('admin/elementer'); ?>">Elementer</a></td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+  </tr>
+  <tr>
+    <td><a href="<?php echo base_url('db/dadas.db'); ?>">Last ned database</a></td>
+  </tr>
+</table>
+</div>
+
+<div id="SideInnhold">
+<?php echo $contents; ?>
+</div>
+
+</body>
+</html>

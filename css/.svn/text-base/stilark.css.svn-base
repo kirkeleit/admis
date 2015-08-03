@@ -1,0 +1,96 @@
+* {
+  padding: 0px;
+  margin: 0px;
+}
+
+BODY {
+  background-color: #1b7ab0;
+}
+
+TABLE {
+  width: 100%;
+}
+
+TH {
+  text-align: left;
+}
+
+#SideMeny {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  bottom: 20px;
+  width: 200px;
+  background-color: #7fb5d4;
+}
+
+#SideInnhold {
+  position: absolute;
+  top: 20px;
+  left: 222px;
+  bottom: 20px;
+  right: 20px;
+  padding: 6px;
+  background-color: white;
+}
+
+#SideLerret {
+  position: relative;
+  border: 0px;
+  background-color: white;
+  /*background-image: url('/grafikk/sideeditor-bg.jpg');*/
+  top: 20px;
+  left: 20px;
+}
+
+#KontrollNyttElement {
+  background-color: #7fb5d4;
+  top: 20px;
+  right: 20px;
+  width: 180px;
+  height: 280px;
+  position: absolute;
+  z-index: 5;
+  padding: 10px;
+}
+
+#KontrollNyttElement LABEL {
+  font-family: Verdana;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+#KnappLagreElement {
+  width: 180px;
+}
+
+#KontrollLukk {
+  background-color: #7fb5d4;
+  top: 330px;
+  right: 20px;
+  width: 180px;
+  height: 40px;
+  position: absolute;
+  z-index: 5;
+  padding: 10px;
+}
+
+#KnappLukk {
+  width: 180px;
+}
+
+.Element {
+  position: absolute;
+  border: 0px solid gray;
+  background-color: #CCFF99;
+  z-index: 20;
+  /*background-image: url(/grafikk/Gauge.png);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: 40px;*/
+  vertical-align: text-bottom;
+  font-family: Verdana;
+  font-weight: bold;
+  text-align: center;
+  font-size: 10px;
+}
