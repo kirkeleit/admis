@@ -1,11 +1,9 @@
 <?php echo form_open('okonomi/inntekt'); ?>
 <input type="hidden" name="InntektID" value="<?php echo set_value('InntektID',$Inntekt['InntektID']); ?>" />
-<fieldset>
-  <legend>Inntekt</legend>
 
-  <p>
+  <div class="form-group">
     <label for="PersonID">Medlem:</label>
-    <select name="PersonID">
+    <select name="PersonID" class="form-control">
       <option value="0" <?php echo set_select('PersonID',0,($Inntekt['PersonID'] == 0) ? TRUE : FALSE); ?>>(ingen medlem)</option>
 <?php
   foreach ($Medlemmer as $Person) {
@@ -15,11 +13,11 @@
   }
 ?>
     </select>
-  </p>
+  </div>
 
-  <p>
+  <div class="form-group">
     <label for="AktivitetID">Aktivitet:</label>
-    <select name="AktivitetID">
+    <select name="AktivitetID" class="form-control">
 <?php
   foreach ($Aktiviteter as $Aktivitet) {
 ?>
@@ -28,11 +26,11 @@
   }
 ?>
     </select>
-  </p>
+  </div>
 
-  <p>
+  <div class="form-group">
     <label for="KontoID">Konto:</label>
-    <select name="KontoID">
+    <select name="KontoID" class="form-control">
 <?php
   foreach ($Kontoer as $Konto) {
 ?>
@@ -41,11 +39,11 @@
   }
 ?>
     </select>
-  </p>
+  </div>
 
-  <p>
+  <div class="form-group">
     <label for="ProsjektID">Prosjekt:</label>
-    <select name="ProsjektID">
+    <select name="ProsjektID" class="form-control">
       <option value="0" <?php echo set_select('ProsjektID',0,($Inntekt['ProsjektID'] == 0) ? TRUE : FALSE); ?>>(ingen prosjekt)</option>
 <?php
   foreach ($Prosjekter as $Prosjekt) {
@@ -64,27 +62,26 @@
 ?>
       </optgroup>
     </select>
-  </p>
+  </div>
 
-  <p>
+  <div class="form-group">
     <label for="DatoBokfort">Dato:</label>
-    <input type="date" name="DatoBokfort" value="<?php echo set_value('DatoBokfort',$Inntekt['DatoBokfort']); ?>" />
-  </p>
+    <input type="date" class="form-control" name="DatoBokfort" value="<?php echo set_value('DatoBokfort',$Inntekt['DatoBokfort']); ?>" />
+  </div>
 
-  <p>
+  <div class="form-group">
     <label for="Beskrivelse">Beskrivelse:</label>
-    <input type="text" name="Beskrivelse" value="<?php echo set_value('Beskrivelse',$Inntekt['Beskrivelse']); ?>" />
-  </p>
+    <input type="text" class="form-control" name="Beskrivelse" value="<?php echo set_value('Beskrivelse',$Inntekt['Beskrivelse']); ?>" />
+  </div>
 
-  <p>
+  <div class="form-group">
     <label for="Belop">Beløp:</label>
-    <input type="number" name="Belop" value="<?php echo set_value('Belop',$Inntekt['Belop']); ?>" step="any" />
-  </p>
+    <input type="number" class="form-control" name="Belop" value="<?php echo set_value('Belop',$Inntekt['Belop']); ?>" step="any" />
+  </div>
 
-  <p class="handlinger">
-    <label>&nbsp;</label>
-    <input type="submit" value="Lagre" />
+  <div class="form-group">
+    <input type="submit" class="btn btn-default" value="Lagre" />
     <input type="button" value="Slett" onclick="javascript:document.location.href='<?php echo site_url(); ?>/okonomi/slettinntekt/<?php echo $Inntekt['InntektID']; ?>';"<?php if ($Inntekt['InntektID'] == 0) { echo " disabled"; } ?> />
-  </p>
-</fieldset>
+  </div>
+
 <?php echo form_close(); ?>

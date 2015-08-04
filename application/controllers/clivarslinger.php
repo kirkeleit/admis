@@ -3,7 +3,7 @@
 
     public function sendeposter() {
       $this->load->library('email');
-      $eposter = $this->db->query("SELECT EpostID,Emne,Meldingstekst,DatoSendt,Epost FROM `VarslingEposter` JOIN `kon_personer` ON (VarslingEposter.PersonMottakerID=kon_personer.ID AND DatoSendt='0000-00-00 00:00:00')");
+      $eposter = $this->db->query("SELECT EpostID,Emne,Meldingstekst,DatoSendt,AdresseMottaker FROM `VarslingEposter` WHERE (DatoSendt='0000-00-00 00:00:00')");
       foreach ($eposter->result() as $epost) {
         $this->email->clear();
 
@@ -14,7 +14,7 @@
         $this->email->initialize($config);
 
         $this->email->from('hjelpekorps@bomlork.no', 'Bømlo RKH');
-        $this->email->to($epost->Epost);
+        $this->email->to($epost->AdresseMottaker);
         $this->email->subject($epost->Emne);
         $this->email->message($epost->Meldingstekst);
         if ($this->email->send()) {

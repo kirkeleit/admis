@@ -62,13 +62,33 @@
         $oppgave['OppgaveID'] = $ID;
       }
       if (isset($Notat)) {
-        $this->db->query($this->db->insert_string('OppgaveNotater',array('OppgaveID'=>$oppgave['OppgaveID'],'DatoRegistrert'=>date('Y-m-d H:i:s'),'PersonID'=>$this->UABruker['ID'],'Notat'=>$Notat)));
+        if (strlen($Notat) > 0) {
+          $this->db->query($this->db->insert_string('OppgaveNotater',array('OppgaveID'=>$oppgave['OppgaveID'],'DatoRegistrert'=>date('Y-m-d H:i:s'),'PersonID'=>$this->UABruker['ID'],'Notat'=>$Notat)));
+          if ($oppgave['PersonAnsvarligID'] != $this->UABruker['ID']) {
+            $rpersoner = $this->db->query("SELECT Epost FROM Personer WHERE (PersonID=".$oppgave['PersonAnsvarligID'].") LIMIT 1");
+            if ($person = $rpersoner->row_array()) {
+              $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,AdresseMottaker,Emne,Meldingstekst) VALUES (Now(),'".$person['Epost']."','[admis] Kommentar er lagt til oppgaven: ".$oppgave['Tittel']."','Frist: ".($oppgave['DatoFrist'] != '' ? date("d.m.Y",strtotime($oppgave['DatoFrist'])) : '')."\nTittel: ".$oppgave['Tittel']."\nBeskrivelse: ".$oppgave['Beskrivelse']."\n\nNytt notat: ".$Notat."')");
+              unset($person);
+            }
+            unset($rpersoner);
+          }
+        }
       }
       if ((!isset($goppgave) and ($oppgave['PersonAnsvarligID'] > 0)) or (($oppgave['PersonAnsvarligID'] != $goppgave['PersonAnsvarligID']) and ($oppgave['PersonAnsvarligID'] > 0))) {
-        $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,PersonMottakerID,Emne,Meldingstekst) VALUES (Now(),".$oppgave['PersonAnsvarligID'].",'[admis] Oppgave tildelt deg: ".$oppgave['Tittel']."','Frist: ".($oppgave['DatoFrist'] != '' ? date("d.m.Y",strtotime($oppgave['DatoFrist'])) : '')."\nTittel: ".$oppgave['Tittel']."\nBeskrivelse: ".$oppgave['Beskrivelse']."')");
+        $rpersoner = $this->db->query("SELECT Epost FROM Personer WHERE (PersonID=".$oppgave['PersonAnsvarligID'].") LIMIT 1");
+        if ($person = $rpersoner->row_array()) {
+          $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,AdresseMottaker,Emne,Meldingstekst) VALUES (Now(),'".$person['Epost']."','[admis] Oppgave tildelt deg: ".$oppgave['Tittel']."','Frist: ".($oppgave['DatoFrist'] != '' ? date("d.m.Y",strtotime($oppgave['DatoFrist'])) : '')."\nTittel: ".$oppgave['Tittel']."\nBeskrivelse: ".$oppgave['Beskrivelse']."')");
+          unset($person);
+        }
+        unset($personer);
       }
       if (($oppgave['StatusID'] == 2) and (isset($goppgave))) {
-        $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,PersonMottakerID,Emne,Meldingstekst) VALUES (Now(),".$goppgave['PersonOpprettetID'].",'[admis] Oppgave er utført: ".$oppgave['Tittel']."','Frist: ".($oppgave['DatoFrist'] != '' ? date("d.m.Y",strtotime($oppgave['DatoFrist'])) : '')."\nTittel: ".$oppgave['Tittel']."\nBeskrivelse: ".$oppgave['Beskrivelse']."')");
+        $rpersoner = $this->db->query("SELECT Epost FROM Personer WHERE (PersonID=".$goppgave['PersonOpprettetID'].") LIMIT 1");
+        if ($person = $rpersoner->row_array()) {
+          $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,AdresseMottaker,Emne,Meldingstekst) VALUES (Now(),'".$person['Epost']."','[admis] Oppgave er utført: ".$oppgave['Tittel']."','Frist: ".($oppgave['DatoFrist'] != '' ? date("d.m.Y",strtotime($oppgave['DatoFrist'])) : '')."\nTittel: ".$oppgave['Tittel']."\nBeskrivelse: ".$oppgave['Beskrivelse']."')");
+          unset($person);
+        }
+        unset($personer);
       }
       return $oppgave;
     }

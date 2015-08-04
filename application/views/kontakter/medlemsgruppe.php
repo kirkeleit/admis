@@ -1,64 +1,86 @@
 <?php echo form_open('kontakter/medlemsgruppe'); ?>
 <input type="hidden" name="GruppeID" id="GruppeID" value="<?php echo set_value('GruppeID',$Gruppe['GruppeID']); ?>" />
-<fieldset>
-  <p>
+
+  <div class="form-group">
     <label for="Navn">Navn:</label>
-    <input type="text" name="Navn" id="Navn" value="<?php echo set_value('Navn',$Gruppe['Navn']); ?>" />
-  </p>
+    <input type="text" class="form-control" name="Navn" id="Navn" value="<?php echo set_value('Navn',$Gruppe['Navn']); ?>" />
+  </div>
 
-  <p>
+  <div class="form-group">
     <label for="Beskrivelse" style="vertical-align: top">Beskrivelse:</label>
-    <textarea name="Beskrivelse" id="Beskrivelse"><?php echo set_value('Beskrivelse',$Gruppe['Beskrivelse']); ?></textarea>
-  </p>
+    <textarea name="Beskrivelse" class="form-control" id="Beskrivelse"><?php echo set_value('Beskrivelse',$Gruppe['Beskrivelse']); ?></textarea>
+  </div>
 
-  <p>
-    <label for="Kompetansekrav">Kompetansekrav:</label>
-    <table>
+  <div class="checkbox">
+    <label for="Alarmgruppe">
+      <input type="checkbox" name="Alarmgruppe" id="Alarmgruppe" <?php echo set_checkbox('Alarmgruppe',0,($Gruppe['Alarmgruppe'] == 1) ? TRUE : FALSE); ?>/>
+      Alarmgruppe
+    </label>
+  </div>
+
+  <div class="form-group">
+    <input type="submit" class="btn btn-default" value="Lagre" name="GruppeLagre" />
+  </div>
+<?php echo form_close(); ?>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Kompetansekrav</div>
+  <div class="table-responsive">
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+      <tr>
+        <th>Kompetanse</th>
+        <th>Fjern</th>
+      </tr>
+    </thead>
+    <tbody>
 <?php
   if (isset($Gruppe['Kompetansekrav'])) {
-  foreach ($Gruppe['Kompetansekrav'] as $Kompetanse) {
+    foreach ($Gruppe['Kompetansekrav'] as $Kompetanse) {
 ?>
       <tr>
         <td><?php echo $Kompetanse['Navn']; ?></td>
+        <td class="text-center"><input type="checkbox" /></td>
       </tr>
 <?php
-  }
+    }
   }
 ?>
-    </table>
-  </p>
+    </tbody>
+  </table>
+  </div>
+</div>
 
-  <p>
-    <label for="Alarmgruppe">Alarmgruppe:</label>
-    <input type="checkbox" name="Alarmgruppe" id="Alarmgruppe" <?php echo set_checkbox('Alarmgruppe',0,($Gruppe['Alarmgruppe'] == 1) ? TRUE : FALSE); ?>/>
-  </p>
-
-  <p class="handlinger">
-    <label>&nbsp;</label>
-    <input type="submit" value="Lagre" name="GruppeLagre" />
-  </p>
-</fieldset>
-<?php echo form_close(); ?>
-
-<table class="liste">
-  <tr>
-    <th>Navn</th>
-    <th>Mobilnr</th>
-    <th>Epost</th>
-    <th>Alder</th>
-    <th>Godkjent</th>
-  </tr>
+<div class="panel panel-default">
+  <div class="panel-heading">Personer</div>
+  <div class="table-responsive">
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+      <tr>
+        <th>Navn</th>
+        <th>Mobilnr</th>
+        <th>Epost</th>
+        <th>Alder</th>
+        <th>Godkjent</th>
+        <th>Fjern</th>
+      </tr>
+    </thead>
+    <tbody>
 <?php
   foreach ($Gruppe['Personer'] as $Person) {
 ?>
-  <tr>
-    <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Fornavn']." ".$Person['Etternavn']); ?></td>
-    <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Mobilnr']); ?></td>
-    <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Epost']); ?></td>
-    <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Alder']); ?></td>
-    <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],(isset($Gruppe['Kompetansekrav']) ? ($Person['Godkjent'] == 1 ? 'Ja' : 'Nei') : '-')); ?></td>
-  </tr>
+      <tr>
+        <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Fornavn']." ".$Person['Etternavn']); ?></td>
+        <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Mobilnr']); ?></td>
+        <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Epost']); ?></td>
+        <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Alder']); ?></td>
+        <td class="<?php echo ($Person['Godkjent'] == 0 ? 'danger' : 'success'); ?>"><?php echo anchor('/kontakter/person/'.$Person['PersonID'],(isset($Gruppe['Kompetansekrav']) ? ($Person['Godkjent'] == 1 ? 'Ja' : 'Nei') : '-')); ?></td>
+        <td class="text-center"><input type="checkbox"></td>
+      </tr>
 <?php
   }
 ?>
-</table>
+    </tbody>
+  </table>
+  </div>
+</div>

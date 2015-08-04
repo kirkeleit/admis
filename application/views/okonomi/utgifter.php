@@ -1,55 +1,56 @@
-<h3>Utgifter [<?php echo sizeof($Utgifter); ?>]</h3>
-<br />
-<table>
-  <tr>
-    <th>Dato</th>
-    <th>Aktivitet</th>
-    <th>Konto</th>
-    <th>Medlem</th>
-    <th>Beskrivelse</th>
-    <th>Beløp</th>
-    <th>&nbsp;</th>
-  </tr>
+<h3 class="sub-header">Utgifter</h3>
+<div class="table-responsive">
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+      <tr>
+        <th>Dato</th>
+        <th>Aktivitet</th>
+        <th>Konto</th>
+        <th>Medlem</th>
+        <th>Beskrivelse</th>
+        <th>Beløp</th>
+        <th>&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
 <?php
   $Totalt = 0;
 
   if (isset($Utgifter)) {
     foreach ($Utgifter as $Utgift) {
 ?>
-  <tr>
-    <td><?php echo $Utgift['DatoBokfort']; ?></td>
-    <td><span title="<?php echo $Utgift['Aktivitet']; ?>"><?php echo $Utgift['AktivitetID']; ?></span></td>
-    <td><span title="<?php echo $Utgift['Konto']; ?>"><?php echo $Utgift['KontoID']; ?></span></td>
-<?php if ($Utgift['PersonID'] > 0) { ?>
-    <td><a href="<?php echo site_url(); ?>/kontakter/person/<?php echo $Utgift['PersonID']; ?>" title="<?php echo $Utgift['Person']; ?>"><?php echo $Utgift['PersonInitialer']; ?></a></td>
-<?php } else { ?>
-    <td>&nbsp;</td>
-<?php } ?>
-    <td><a href="<?php echo site_url(); ?>/okonomi/utgift/<?php echo $Utgift['UtgiftID']; ?>"><?php echo $Utgift['Beskrivelse']; ?></a></td>
-    <td style="text-align: right;"><?php echo "kr ".number_format($Utgift['Belop'],2,',','.'); ?></td>
+      <tr>
+        <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],$Utgift['DatoBokfort']); ?></td>
+        <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],$Utgift['AktivitetID'],'title="'.$Utgift['Aktivitet'].'"'); ?></td>
+        <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],$Utgift['KontoID'],'title="'.$Utgift['Konto'].'"'); ?></td>
+        <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],($Utgift['PersonID'] > 0 ? $Utgift['PersonInitialer'] : '&nbsp;'),'title="'.$Utgift['Person'].'"'); ?></td>
+        <td><a href="<?php echo site_url(); ?>/okonomi/utgift/<?php echo $Utgift['UtgiftID']; ?>"><?php echo $Utgift['Beskrivelse']; ?></a></td>
+        <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],'kr '.number_format($Utgift['Belop'],2,',','.')); ?></td>
 <?php if (!isset($Utgift['Filer'])) { ?>
-    <td>&nbsp;</td>
+        <td>&nbsp;</td>
 <?php } else { ?>
-    <td><img src="/grafikk/icons/picture.png" /></td>
+        <td><img src="/grafikk/icons/picture.png" /></td>
 <?php } ?>
-  </tr>
+      </tr>
 <?php
       $Totalt = $Totalt + $Utgift['Belop'];
     }
 ?>
-  <tr>
-    <td colspan="7" style="text-align: right;"><b><?php echo "kr ".number_format($Totalt,2,',','.'); ?></b></td>
-  </tr>
+      <tr>
+        <td colspan="7" style="text-align: right;"><b><?php echo "kr ".number_format($Totalt,2,',','.'); ?></b></td>
+      </tr>
 <?php
   } else {
 ?>
-  <tr>
-    <td colspan="7">Ingen utgifter i år!</td>
-  </tr>
+      <tr>
+        <td colspan="7">Ingen utgifter i år!</td>
+      </tr>
 <?php
   }
 ?>
-</table>
+    </tbody>
+  </table>
+</div>
 
 <form method="GET">
 <div class="filter">

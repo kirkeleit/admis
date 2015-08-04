@@ -24,12 +24,12 @@ class Kontakter extends CI_Controller {
       $ID = $this->input->post('PersonID');
       $person['Fornavn'] = $this->input->post('Fornavn');
       $person['Etternavn'] = $this->input->post('Etternavn');
-      $person['DatoFodselsdato'] = $this->input->post('DatoFodselsdato');
+      $person['DatoFodselsdato'] = ($this->input->post('DatoFodselsdato') == '' ? '' : date("Y-m-d",strtotime($this->input->post('DatoFodselsdato'))));
       $person['Mobilnr'] = $this->input->post('Mobilnr');
       $person['Epost'] = $this->input->post('Epost');
       $person['Medlem'] = ($this->input->post('Medlem') ? 1 : 0);
       $person['Relasjonsnummer'] = $this->input->post('Relasjonsnummer');
-      $person['DatoMedlemsdato'] = $this->input->post('DatoMedlemsdato');
+      $person['DatoMedlemsdato'] = ($this->input->post('DatoMedlemsdato') == '' ? '' : date("Y-m-d",strtotime($this->input->post('DatoMedlemsdato'))));
       $person['Initialer'] = $this->input->post('Initialer');
       $person = $this->Kontakter_model->lagreperson($ID,$person);
       if ($this->input->post('AdresseID')) { $AdresseID = $this->input->post('AdresseID'); } else { $AdresseID = null; }
@@ -38,6 +38,12 @@ class Kontakter extends CI_Controller {
       if ($this->input->post('Postnummer')) { $adresse['Postnummer'] = $this->input->post('Postnummer'); }
       if (isset($adresse)) { $this->Kontakter_model->lagreadresseperson($AdresseID,$person['PersonID'],$adresse); }
       if ($this->input->post('NyMedlemsgruppeID') > 0) { $this->Kontakter_model->koblepersonmedlemsgruppe($person['PersonID'],$this->input->post('NyMedlemsgruppeID')); }
+      if ($this->input->post('FjernMedlemsgruppeID')) {
+        $grupper = $this->input->post('FjernMedlemsgruppeID');
+        for ($i=0; $i<sizeof($grupper); $i++) {
+          $this->Kontakter_model->fjernpersonmedlemsgruppe($person['PersonID'],$grupper[$i]);
+        }
+      }
       redirect('/kontakter/person/'.$ID);
     } else {
       $data['Person'] = $this->Kontakter_model->person($this->uri->segment(3));

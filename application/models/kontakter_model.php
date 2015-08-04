@@ -42,6 +42,9 @@
         $this->db->query($this->db->update_string('Personer',$person,'PersonID='.$ID));
         $person['PersonID'] = $ID;
       }
+      if ($this->db->affected_rows() > 0) {
+        $this->session->set_flashdata('Infomelding','Personen er oppdatert.');
+      }
       return $person;
     }
 
@@ -84,6 +87,9 @@
       } else {
         $this->db->query($this->db->update_string('Organisasjoner',$organisasjon,'OrganisasjonID='.$ID));
         $organisasjon['OrganisasjonID'] = $ID;
+      }
+      if ($this->db->affected_rows() > 0) {
+        $this->session->set_flashdata('Infomelding','Organisasjonen er oppdatert.');
       }
       return $organisasjon;
     }
@@ -235,6 +241,10 @@
 
     function koblepersonmedlemsgruppe($PersonID,$GruppeID) {
       $this->db->query("INSERT INTO PersonXMedlemsgruppe (PersonID,GruppeID) VALUES (".$PersonID.",".$GruppeID.")");
+    }
+
+    function fjernpersonmedlemsgruppe($PersonID,$GruppeID) {
+      $this->db->query("DELETE FROM PersonXMedlemsgruppe WHERE PersonID=".$PersonID." AND GruppeID=".$GruppeID);
     }
 
   }

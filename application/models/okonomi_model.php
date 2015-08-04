@@ -9,58 +9,6 @@
       foreach ($rordrer->result_array() as $ordre) {
         $ordre['Sum'] = 0;
         $ordre['Status'] = $this->InnkjopsordreStatus[$ordre['StatusID']];
-        /*$ordre['ID'] = $rad->ID;
-        $ordre['DatoRegistrert'] = date('d.m.Y',strtotime($rad->DatoRegistrert));
-        $ordre['DatoEndret'] = date('d.m.Y H:i',strtotime($rad->DatoEndret));
-        $ordre['ProsjektID'] = $rad->ProsjektID;
-        $prosjekter = $this->db->query("SELECT Prosjektnavn FROM Prosjekter WHERE (ProsjektID=".$rad->ProsjektID.") LIMIT 1");
-        if ($prosjekt = $prosjekter->row()) {
-          $ordre['Prosjektnavn'] = $prosjekt->Prosjektnavn;
-        }
-        unset($prosjekter);
-        $ordre['Referanse'] = $rad->Referanse;
-        $ordre['PersonID'] = $rad->PersonID;
-        $personer = $this->db->query("SELECT * FROM kon_personer WHERE (ID=".$rad->PersonID.") LIMIT 1");
-        if ($person = $personer->row()) {
-          $ordre['PersonNavn'] = $person->Fornavn." ".$person->Etternavn;
-          $ordre['PersonEpost'] = $person->Epost;
-          unset($person);
-        } else {
-          $ordre['PersonNavn'] = "(ingen)";
-          $ordre['PersonEpost'] = NULL;
-        }
-        unset($personer);
-        $ordre['Linjer'] = 0;
-        $ordre['Sum'] = 0;
-        $resultat2 = $this->db->query("SELECT * FROM oko_innkjopsordrelinjer WHERE (InnkjopsordreID=".$rad->ID.") ORDER BY ID ASC");
-        foreach ($resultat2->result() as $rad2) {
-          $ordre['Linjer']++;
-          $ordre['Sum'] = $ordre['Sum'] + ($rad2->Pris * $rad2->Antall);
-        }
-        $ordre['StatusID'] = $rad->Status;
-        switch ($rad->Status) {
-          case 0:
-            $ordre['Status'] = "Registrert";
-            break;
-          case 1:
-            $ordre['Status'] = "Under planlegging";
-            break;
-          case 2:
-            $ordre['Status'] = "Til godkjenning";
-            break;
-          case 3:
-            $ordre['Status'] = "Godkjent";
-            break;
-          case 4:
-            $ordre['Status'] = "Bestilt";
-            break;
-          case 5:
-            $ordre['Status'] = "Levert";
-            break;
-          case 6:
-            $ordre['Status'] = "Fullført";
-            break;
-        }*/
         $ordrer[] = $ordre;
         unset($ordre);
       }
@@ -73,51 +21,6 @@
       $rordrer = $this->db->query("SELECT OrdreID,DatoRegistrert,DatoEndret,ProsjektID,(SELECT Prosjektnavn FROM Prosjekter WHERE (ProsjektID=o.ProsjektID) LIMIT 1) AS Prosjektnavn,Referanse,Beskrivelse,PersonAnsvarligID,(SELECT Fornavn FROM Personer WHERE (PersonID=o.PersonAnsvarligID) LIMIT 1) AS PersonAnsvarligNavn,StatusID,LeverandorID,(SELECT Navn FROM Organisasjoner WHERE (OrganisasjonID=o.LeverandorID) LIMIT 1) AS LeverandorNavn FROM Innkjopsordrer o WHERE (OrdreID=".$ID.") LIMIT 1");
       if ($ordre = $rordrer->row_array()) {
         $ordre['Status'] = $this->InnkjopsordreStatus[$ordre['StatusID']];
-        /*$ordre['ID'] = $rad->ID;
-        $ordre['DatoRegistrert'] = date('d.m.Y H:i',strtotime($rad->DatoRegistrert));
-        $ordre['DatoEndret'] = date('d.m.Y H:i',strtotime($rad->DatoEndret));
-        $ordre['PersonID'] = $rad->PersonID;
-        $personer = $this->db->query("SELECT * FROM kon_personer WHERE (ID=".$rad->PersonID.") LIMIT 1");
-        if ($person = $personer->row()) {
-          $ordre['PersonNavn'] = $person->Fornavn." ".$person->Etternavn;
-          $ordre['PersonEpost'] = $person->Epost;
-          unset($person);
-        } else {
-          $ordre['PersonNavn'] = "(ingen)";
-          $ordre['PersonEpost'] = NULL;
-        }
-        unset($personer);
-        $ordre['ProsjektID'] = $rad->ProsjektID;
-        $ordre['LeverandorID'] = $rad->LeverandorID;
-        $ordre['LeverandorNavn'] = $rad->LeverandorNavn;
-        $ordre['Referanse'] = $rad->Referanse;
-        $ordre['Beskrivelse'] = $rad->Beskrivelse;
-        $ordre['CRCStatus'] = $this->innkjopsordrelinjercrc($rad->ID);
-        $ordre['CRCGodkjent'] = $rad->CRCGodkjent;
-        $ordre['StatusID'] = $rad->Status;
-        switch ($rad->Status) {
-          case 0:
-            $ordre['Status'] = "Registrert";
-            break;
-          case 1:
-            $ordre['Status'] = "Under planlegging";
-            break;
-          case 2:
-            $ordre['Status'] = "Til godkjenning";
-            break;
-          case 3:
-            $ordre['Status'] = "Godkjent";
-            break;
-          case 4:
-            $ordre['Status'] = "Bestilt";
-            break;
-          case 5:
-            $ordre['Status'] = "Levert";
-            break;
-          case 6:
-            $ordre['Status'] = "Fullført";
-            break;
-        }*/
         return $ordre;
       }
     }
@@ -132,45 +35,55 @@
       }
     }*/
 
-    function lagreinnkjopsordre($ordre) {
-      if ($ordre['OrdreID'] == 0) {
-        $this->db->query("INSERT INTO Innkjopsordre (DatoRegistrert,StatusID) VALUES (Now(),1)");
-        $ordre['OrdreID'] = $this->db->insert_id();
+    function lagreinnkjopsordre($ID,$ordre) {
+      $ordre['DatoEndret'] = date("Y-m-d H:i:s");
+      if ($ID == 0) {
+        $ordre['DatoRegistrert'] = $ordre['DatoEndret'];
+        $this->db->query($this->db->insert_string('Innkjopsordrer',$ordre));
+        $ID = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Innkjopsordrer',$ordre,'OrdreID='.$ID));
       }
-      $this->db->query("UPDATE oko_innkjopsordre SET ProsjektID=".$ordre['ProsjektID']." WHERE OrdreID=".$ordre['OrdreID']." LIMIT 1");
-      $this->db->query("UPDATE oko_innkjopsordre SET PersonAnsvarligID=".$ordre['PersonAnsvarligID']." WHERE OrdreID=".$ordre['OrdreID']." LIMIT 1");
-      $this->db->query("UPDATE oko_innkjopsordre SET LeverandorID='".$ordre['LeverandorID']."' WHERE OrdreID=".$ordre['OrdreID']." LIMIT 1");
-      $this->db->query("UPDATE oko_innkjopsordre SET Referanse='".$ordre['Referanse']."' WHERE OrdreID=".$ordre['OrdreID']." LIMIT 1");
-      $this->db->query("UPDATE oko_innkjopsordre SET Beskrivelse='".$ordre['Beskrivelse']."' WHERE OrdreID=".$ordre['OrdreID']." LIMIT 1");
-      $this->db->query("UPDATE oko_innkjopsordre SET DatoEndret=Now() WHERE OrdreID=".$ordre['OrdreID']." LIMIT 1");
+      $ordre['OrdreID'] = $ID;
       return $ordre;
     }
 
-    /*function lagreinnkjopsordrelinje($linje) {
-      if ($linje['ID'] == 0) {
-        $this->db->query("INSERT INTO oko_innkjopsordrelinjer (InnkjopsordreID,Varenummer,Varenavn,Pris,Antall) VALUES (".$linje['OrdreID'].",'".$linje['Varenummer']."','".$linje['Varenavn']."','".$linje['Pris']."','".$linje['Antall']."')");
+    function lagreinnkjopsordrelinje($ID,$linje) {
+      if ($ID == 0) {
+        $this->db->query($this->db->insert_string('InnkjopsordreLinjer',$linje));
       } else {
-        $this->db->query("UPDATE oko_innkjopsordrelinjer SET LeverandorID=".$linje['LeverandorID'].",Varenummer='".$linje['Varenummer']."',Varenavn='".$linje['Varenavn']."',Pris='".$linje['Pris']."',Antall='".$linje['Antall']."' WHERE ID=".$linje['ID']." LIMIT 1");
+        $this->db->query($this->db->update_string('InnkjopsordreLinjer',$linje,'LinjeID='.$ID));
       }
-    }*/
+    }
 
     function slettinnkjopsordre($ID) {
       $this->db->query("DELETE FROM Innkjopsordrer WHERE OrdreID=".$ID." LIMIT 1");
-      $this->db->query("DELETE FROM Innkjopsordrelinjer WHERE InnkjopsordreID=".$ID." LIMIT 1");
+      $this->db->query("DELETE FROM InnkjopsordreLinjer WHERE OrdreID=".$ID." LIMIT 1");
     }
 
     function slettinnkjopsordrelinje($ID) {
-      $this->db->query("DELETE FROM Innkjopsordrelinjer WHERE ID=".$ID." LIMIT 1");
+      $this->db->query("DELETE FROM InnkjopsordreLinjer WHERE LinjeID=".$ID." LIMIT 1");
     }
 
-    /*function settinnkjopsordrestatus($data) {
-      $this->db->query("UPDATE oko_innkjopsordre SET Status='".$data['Status']."' WHERE ID=".$data['ID']." LIMIT 1");
-      $this->db->query("UPDATE oko_innkjopsordre SET DatoEndret=Now() WHERE ID=".$data['ID']." LIMIT 1");
-      if ($data['Status'] == 4) {
-        $this->db->query("UPDATE oko_innkjopsordrelinjer SET StatusID=1 WHERE InnkjopsordreID=".$data['ID']);
+    function settinnkjopsordrestatus($data) {
+      $this->db->query("UPDATE Innkjopsordrer SET StatusID='".$data['Status']."' WHERE OrdreID=".$data['ID']." LIMIT 1");
+      $this->db->query("UPDATE Innkjopsordrer SET DatoEndret=Now() WHERE OrdreID=".$data['ID']." LIMIT 1");
+      switch ($data['Status']) {
+        case 1:
+          $ordre = $this->innkjopsordre($data['ID']);
+          $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,AdresseMottaker,Emne,Meldingstekst) VALUES (Now(),'thorbjorn@kirkeleit.net','[admis] Innkjøpsordre avvist: ".$ordre['Referanse']."','')");
+        case 2:
+          $ordre = $this->innkjopsordre($data['ID']);
+          $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,AdresseMottaker,Emne,Meldingstekst) VALUES (Now(),'thorbjorn@kirkeleit.net','[admis] Innkjøpsordre til godkjenning: ".$ordre['Referanse']."','')");
+        case 3:
+          $ordre = $this->innkjopsordre($data['ID']);
+          $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,AdresseMottaker,Emne,Meldingstekst) VALUES (Now(),'thorbjorn@kirkeleit.net','[admis] Innkjøpsordre godkjent: ".$ordre['Referanse']."','')");
+        case 4:
+          $this->db->query("UPDATE InnkjopsordreLinjer SET StatusID=1 WHERE OrdreID=".$data['ID']);
+          break;
       }
       return TRUE;
-    }*/
+    }
 
     function innkjopsordrelinjer($filter) {
       if ($filter == NULL) {
@@ -207,7 +120,7 @@
             }
             $rrestlinjer = $this->db->query("SELECT * FROM InnkjopsordreLinjer WHERE (OrdreID='".$linje['OrdreID']."') AND (StatusID < 2)");
             if ($rrestlinjer->num_rows() == 0) {
-              $this->db->query("UPDATE Innkjopsordrer SET Status=5 WHERE ID=".$linje['OrdreID']." LIMIT 1");
+              $this->db->query("UPDATE Innkjopsordrer SET Status=5 WHERE OrdreID=".$linje['OrdreID']." LIMIT 1");
             }
           }
         }

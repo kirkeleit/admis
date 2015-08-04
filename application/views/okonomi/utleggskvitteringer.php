@@ -1,38 +1,42 @@
-<h3>Utleggskvitteringer [<?php echo sizeof($Utleggskvitteringer); ?>]</h3>
-<br />
-<table>
-  <tr>
-    <th>ID</th>
-    <th>Dato</th>
-    <th>Aktivitet</th>
-    <th>Medlem</th>
-    <th>Beløp</th>
-    <th>Status</th>
-  </tr>
-
+<h3 class="sub-header">Utleggskvitteringer</h3>
+<div class="table-responsive">
+  <table class="table table-striped table-hover table-condensed">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Dato</th>
+        <th>Aktivitet</th>
+        <th>Medlem</th>
+        <th>Beløp</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
 <?php
   if (isset($Utleggskvitteringer)) {
     foreach ($Utleggskvitteringer as $Utlegg) {
 ?>
-  <tr>
-    <td><a href="<?php echo site_url(); ?>/okonomi/utleggskvittering/<?php echo $Utlegg['UtleggID']; ?>"><?php echo $Utlegg['UtleggID']; ?></a></td>
-    <td><?php echo date("d.m.Y",strtotime($Utlegg['DatoUtlegg'])); ?></td>
-    <td><?php echo $Utlegg['AktivitetID']." ".$Utlegg['AktivitetNavn']; ?></td>
-    <td><?php echo $Utlegg['PersonNavn']; ?></td>
-    <td><?php echo "kr ".number_format($Utlegg['Belop'],2,',','.'); ?></td>
-    <td><?php echo $Utlegg['Status']; ?></td>
-  </tr>
+      <tr>
+        <td><a href="<?php echo site_url(); ?>/okonomi/utleggskvittering/<?php echo $Utlegg['UtleggID']; ?>"><?php echo $Utlegg['UtleggID']; ?></a></td>
+        <td><?php echo date("d.m.Y",strtotime($Utlegg['DatoUtlegg'])); ?></td>
+        <td><?php echo $Utlegg['AktivitetID']." ".$Utlegg['AktivitetNavn']; ?></td>
+        <td><?php echo $Utlegg['PersonNavn']; ?></td>
+        <td><?php echo "kr ".number_format($Utlegg['Belop'],2,',','.'); ?></td>
+        <td><?php echo $Utlegg['Status']; ?></td>
+      </tr>
 <?php
     }
   } else {
 ?>
-  <tr>
-    <td colspan="5">Ingen utleggskvitteringer i utvalg.</td>
-  </tr>
+      <tr>
+        <td colspan="5">Ingen utleggskvitteringer i utvalg.</td>
+      </tr>
 <?php
   }
 ?>
-</table>
+    </tbody>
+  </table>
+</div>
 
 <form method="GET">
 <div class="filter">

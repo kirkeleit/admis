@@ -18,13 +18,12 @@ class okonomi extends CI_Controller {
     $this->load->model('Prosjekter_model');
 
     if ($this->input->post('OrdreLagre')) {
-      $data['OrdreID'] = $this->input->post('OrdreID');
       $data['ProsjektID'] = $this->input->post('ProsjektID');
       $data['PersonAnsvarligID'] = $this->input->post('PersonAnsvarligID');
       $data['LeverandorID'] = $this->input->post('LeverandorID');
       $data['Referanse'] = $this->input->post('Referanse');
       $data['Beskrivelse'] = $this->input->post('Beskrivelse');
-      $ordre = $this->Okonomi_model->lagreinnkjopsordre($data);
+      $ordre = $this->Okonomi_model->lagreinnkjopsordre($this->input->post('OrdreID'),$data);
       redirect('/okonomi/innkjopsordre/'.$ordre['OrdreID']);
     } elseif ($this->input->post('OrdreSlett')) {
       $this->Okonomi_model->slettinnkjopsordre($this->input->post('OrdreID'));
@@ -62,13 +61,12 @@ class okonomi extends CI_Controller {
 
   public function nyinnkjopsordrelinje() {
     $this->load->model('Okonomi_model');
-    $linje['ID'] = $this->input->post('LinjeID');
     $linje['OrdreID'] = $this->input->post('OrdreID');
     $linje['Varenummer'] = $this->input->post('Varenummer');
     $linje['Varenavn'] = $this->input->post('Varenavn');
     $linje['Pris'] = str_replace(',', '.', $this->input->post('Pris'));
     $linje['Antall'] = $this->input->post('Antall');
-    $this->Okonomi_model->lagreinnkjopsordrelinje($linje);
+    $this->Okonomi_model->lagreinnkjopsordrelinje($this->input->post('LinjeID'),$linje);
     redirect('/okonomi/innkjopsordre/'.$linje['OrdreID']);
   }
 
