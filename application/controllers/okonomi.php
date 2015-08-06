@@ -6,6 +6,12 @@ class okonomi extends CI_Controller {
     redirect('/okonomi/innkjopsordrer');
   }
 
+  public function oversikt() {
+    $this->load->model('Okonomi_model');
+    $data['Oversikt'] = $this->Okonomi_model->okonomioversikt();
+    $this->template->load('standard','okonomi/oversikt',$data);
+  }
+
   public function innkjopsordrer() {
     $this->load->model('Okonomi_model');
     $data['Ordrer'] = $this->Okonomi_model->innkjopsordrer();
@@ -108,37 +114,32 @@ class okonomi extends CI_Controller {
 
   public function utgift() {
     $this->load->model('Okonomi_model');
-    $this->form_validation->set_rules('ID','ID','required|numeric');
-    $this->form_validation->set_rules('PersonID','PersonID','required|numeric');
-    $this->form_validation->set_rules('AktivitetID','AktivitetID','required|trim');
-    $this->form_validation->set_rules('KontoID','KontoID','required|trim');
-    $this->form_validation->set_rules('ProsjektID','ProsjektID','required|numeric');
-    $this->form_validation->set_rules('DatoBokfort','DatoBokfort','required|trim');
-    $this->form_validation->set_rules('Beskrivelse','Beskrivelse','required|trim');
-    $this->form_validation->set_rules('Belop','Belop','required|trim');
-    if ($this->form_validation->run() == TRUE) {
-      $utgift['ID'] = $this->input->post('ID');
+    if ($this->input->post('UtgiftLagre')) {
+      $ID = $this->input->post('UtgiftID');
       $utgift['PersonID'] = $this->input->post('PersonID');
       $utgift['AktivitetID'] = $this->input->post('AktivitetID');
       $utgift['KontoID'] = $this->input->post('KontoID');
       $utgift['ProsjektID'] = $this->input->post('ProsjektID');
-      $utgift['DatoBokfort'] = $this->input->post('DatoBokfort');
+      $utgift['DatoBokfort'] = date("Y-m-d",strtotime($this->input->post('DatoBokfort')));
       $utgift['Beskrivelse'] = $this->input->post('Beskrivelse');
       $utgift['Belop'] = str_replace(',', '.', $this->input->post('Belop'));
       $config['upload_path'] = './uploads/';
       $config['allowed_types'] = 'gif|jpg|png|pdf';
       $config['encrypt_name'] = 'true';
-      $ID = $this->Okonomi_model->lagreutgift($utgift);
+      $utgift = $this->Okonomi_model->lagreutgift($ID,$utgift);
       $this->load->library('upload',$config);
       if ($this->upload->do_upload()) {
         $udata = $this->upload->data();
         $fildata['Filnavn'] = $udata['file_name'];
-        $fildata['Navn'] = "Utgift ".$ID;
-        $fildata['UtgiftID'] = $ID;
+        $fildata['Navn'] = "Utgift ".$utgift['UtgiftID'];
+        $fildata['UtgiftID'] = $utgift['UtgiftID'];
         $this->load->model('Filer_model');
         $this->Filer_model->nyfil($fildata);
       }
-      redirect('/okonomi/utgift/'.$ID);
+      redirect('/okonomi/utgift/'.$utgift['UtgiftID']);
+    } elseif ($this->input->post('UtgiftSlett')) {
+      $this->Okonomi_model->slettutgift($this->input->post('UtgiftID'));
+      redirect('okonomi/utgifter/');
     } else {
       $this->load->model('Prosjekter_model');
       $this->load->model('Kontakter_model');
@@ -171,12 +172,6 @@ class okonomi extends CI_Controller {
     $data['ProsjekterArkiv'] = $this->Prosjekter_model->prosjekter(array("Arkiv" => "1"));
     $data['Medlemmer'] = $this->Kontakter_model->medlemmer();
     $this->template->load('standard','okonomi/utgift',$data);
-  }
-
-  public function slettutgift() {
-    $this->load->model('Okonomi_model');
-    $this->Okonomi_model->slettutgift($this->uri->segment(3));
-    redirect('okonomi/utgifter/');
   }
 
   public function inntekter() {
@@ -280,14 +275,14 @@ class okonomi extends CI_Controller {
   public function utleggskvittering() {
     $this->load->model('Okonomi_model');
     if ($this->input->post('UtleggSlett')) {
-      $this->Okonomi_model->slettutleggskvittering($this->input->post('ID'));
+      $this->Okonomi_model->slettutleggskvittering($this->input->post('UtleggID'));
       redirect('/okonomi/utleggskvitteringer/');
     } elseif ($this->input->post('UtleggSigner')) {
-      $this->Okonomi_model->signerutleggskvittering($this->input->post('ID'),$this->UABruker['ID']);
+      $this->Okonomi_model->signerutleggskvittering($this->input->post('UtleggID'),$this->UABruker['ID']);
     } elseif ($this->input->post('UtleggGodkjenn')) {
-      $this->Okonomi_model->godkjennutleggskvittering($this->input->post('ID'),$this->UABruker['ID']);
+      $this->Okonomi_model->godkjennutleggskvittering($this->input->post('UtleggID'),$this->UABruker['ID']);
     }
-    $this->form_validation->set_rules('ID','ID','required|numeric');
+    $this->form_validation->set_rules('UtleggID','UtleggID','required|numeric');
     $this->form_validation->set_rules('PersonID','PersonID','required|numeric');
     $this->form_validation->set_rules('AktivitetID','AktivitetID','required|trim');
     $this->form_validation->set_rules('ProsjektID','ProsjektID','required|trim');
@@ -296,12 +291,12 @@ class okonomi extends CI_Controller {
     $this->form_validation->set_rules('Belop','Belop','required|trim');
     $this->form_validation->set_rules('Kontonummer','Kontonummer','required|trim');
     if ($this->form_validation->run() == TRUE) {
-      $utlegg['ID'] = $this->input->post('ID');
+      $utlegg['UtleggID'] = $this->input->post('UtleggID');
       $utlegg['PersonID'] = $this->input->post('PersonID');
       $utlegg['AktivitetID'] = $this->input->post('AktivitetID');
       $utlegg['ProsjektID'] = $this->input->post('ProsjektID');
       $utlegg['Kontonummer'] = $this->input->post('Kontonummer');
-      $utlegg['DatoUtlegg'] = $this->input->post('DatoUtlegg');
+      $utlegg['DatoUtlegg'] = date('Y-m-d',strtotime($this->input->post('DatoUtlegg')));
       $utlegg['Beskrivelse'] = $this->input->post('Beskrivelse');
       $utlegg['Belop'] = str_replace(',', '.', $this->input->post('Belop'));
       $ID = $this->Okonomi_model->lagreutleggskvittering($utlegg);
@@ -340,7 +335,7 @@ class okonomi extends CI_Controller {
     $data['Personer'] = $this->Kontakter_model->medlemmer();
     $data['Prosjekter'] = $this->Prosjekter_model->prosjekter();
     $data['ProsjekterArkiv'] = $this->Prosjekter_model->prosjekter(array("Arkiv" => "1"));
-    $utlegg['ID'] = 0;
+    $utlegg['UtleggID'] = 0;
     $utlegg['PersonID'] = $this->UABruker['ID'];
     $utlegg['AktivitetID'] = "50-500";
     $utlegg['ProsjektID'] = 0;
@@ -364,6 +359,27 @@ class okonomi extends CI_Controller {
     }
     $data['Utleggskvitteringer'] = $this->Okonomi_model->utleggtilutbetaling();
     $this->template->load('standard','okonomi/tilutbetaling',$data);
+  }
+
+  public function fakturaer() {
+    $this->load->model('Okonomi_model');
+    $data['Fakturaer'] = $this->Okonomi_model->fakturaer();
+    $this->template->load('standard','okonomi/fakturaer',$data);
+  }
+
+  public function faktura() {
+    $this->load->model('Okonomi_model');
+    $this->load->model('Kontakter_model');
+    if ($this->input->post('FakturaLagre')) {
+      $data['Referanse'] = $this->input->post('Referanse');
+      $data['PersonAnsvarligID'] = $this->input->post('PersonAnsvarligID');
+      $data['Notater'] = $this->input->post('Notater');
+      $this->Okonomi_model->lagrefaktura($this->input->post('FakturaID'),$data);
+      unset($data);
+    }
+    $data['Personer'] = $this->Kontakter_model->medlemmer();
+    $data['Faktura'] = $this->Okonomi_model->faktura($this->uri->segment(3));
+    $this->template->load('standard','okonomi/faktura',$data);
   }
 
 }

@@ -4,7 +4,7 @@
     var $ProsjektStatus = array(0 => "Registrert", 1 => "Under planlegging", 2 => "Til godkjenning", 3 => "Godkjent", 4 => "Påbegynt", 5 => "Fullført");
 
     function prosjekter($filter = NULL) {
-      $sql = "SELECT ProsjektID,DatoRegistrert,ProsjektAr,Prosjektnavn,FaggruppeID,(SELECT Navn FROM Faggrupper WHERE (FaggruppeID=p.FaggruppeID) LIMIT 1) AS FaggruppeNavn,PersonProsjektlederID,(SELECT Fornavn FROM Personer WHERE (PersonID=p.PersonProsjektlederID) LIMIT 1) AS PersonProsjektlederNavn,Budsjettramme,StatusID FROM Prosjekter p WHERE 1";
+      $sql = "SELECT ProsjektID,DatoRegistrert,ProsjektAr,Prosjektnavn,FaggruppeID,(SELECT Navn FROM Faggrupper WHERE (FaggruppeID=p.FaggruppeID) LIMIT 1) AS FaggruppeNavn,PersonProsjektlederID,(SELECT Fornavn FROM Personer WHERE (PersonID=p.PersonProsjektlederID) LIMIT 1) AS PersonProsjektlederNavn,DatoProsjektstart,DatoProsjektslutt,Budsjettramme,StatusID FROM Prosjekter p WHERE 1";
       if (isset($filter['FaggruppeID'])) {
         $sql = $sql." AND (FaggruppeID=".$filter['FaggruppeID'].")";
       }

@@ -1,108 +1,96 @@
-<?php
-  $Redigerbar = 0;
-  if (($Sak['SaksNummer'] == 0) and (in_array('801',$UABruker['UAP']))) {
-    $Redigerbar = 1;
-  }
-?>
 <?php echo form_open('/raadet/sak/'); ?>
 <input type="hidden" name="SakID" value="<?php echo set_value('SakID',$Sak['SakID']); ?>" />
-<fieldset>
-  <legend>Sak</legend>
+<div class="panel panel-default">
+  <div class="panel-heading"><h4>Saksdetaljer</h4></div>
 
-  <p>
-    <label>Saksnummer:</label>
-    <?php echo $Sak['SaksAr']."/".$Sak['SaksNummer']; ?>
-  </p>
+  <div class="panel-body">
 
-  <p>
-    <label for="Tittel">Tittel:</label>
-    <input type="text" name="Tittel" id="Tittel" value="<?php echo set_value('Tittel',$Sak['Tittel']); ?>" <?php if ($Redigerbar == 0) { echo "disabled "; } ?>/>
-  </p>
+    <div class="form-group">
+      <label>Saksnummer:</label>
+      <span class="form-control-static"><?php echo $Sak['SaksAr']."/".$Sak['SaksNummer']; ?></span>
+    </div>
 
-  <p>
-    <label for="PersonID">Innmeldt av:</label>
-    <select name="PersonID" id="PersonID" <?php if ($Redigerbar == 0) { echo "disabled "; } ?>>
-      <option value="0" <?php echo set_select('PersonID',0,($Sak['PersonID'] == 0) ? TRUE : FALSE); ?>>(ikke satt)</option>
+    <div class="form-group">
+      <label for="Tittel">Tittel:</label>
+      <input type="text" class="form-control" name="Tittel" id="Tittel" value="<?php echo set_value('Tittel',$Sak['Tittel']); ?>" />
+    </div>
+
+    <div class="form-group">
+      <label for="PersonID">Innmeldt av:</label>
+      <select name="PersonID" class="form-control" id="PersonID">
+        <option value="0" <?php echo set_select('PersonID',0,($Sak['PersonID'] == 0) ? TRUE : FALSE); ?>>(ikke satt)</option>
 <?php
   if (isset($Personer)) {
     foreach ($Personer as $Person) {
 ?>
-      <option value="<?php echo $Person['PersonID']; ?>" <?php echo set_select('PersonID',$Person['PersonID'],($Sak['PersonID'] == $Person['PersonID']) ? TRUE : FALSE); ?>><?php echo $Person['Fornavn']." ".$Person['Etternavn']; ?></option>
+        <option value="<?php echo $Person['PersonID']; ?>" <?php echo set_select('PersonID',$Person['PersonID'],($Sak['PersonID'] == $Person['PersonID']) ? TRUE : FALSE); ?>><?php echo $Person['Fornavn']." ".$Person['Etternavn']; ?></option>
 <?php
     }
   }
 ?>
-    </select>
-  </p>
+      </select>
+    </div>
 
-  <p>
-    <label for="Saksbeskrivelse">Saksbeskrivelse:</label>
-    <textarea name="Saksbeskrivelse" id="Saksbeskrivelse" <?php if ($Redigerbar == 0) { echo "disabled "; } ?>><?php echo set_value('Saksbeskrivelse',$Sak['Saksbeskrivelse']); ?></textarea>
-  </p>
+    <div class="form-group">
+      <label for="Saksbeskrivelse">Saksbeskrivelse:</label>
+      <textarea name="Saksbeskrivelse" class="form-control" id="Saksbeskrivelse"><?php echo set_value('Saksbeskrivelse',$Sak['Saksbeskrivelse']); ?></textarea>
+    </div>
 
-  <p>
-    <label>Status:</label>
-    <?php if (isset($Sak['Status'])) { echo $Sak['Status']; } else { echo "&nbsp;"; } ?>
-  </p>
+    <div class="form-group">
+      <label>Status:</label>
+      <span class="form-control-static"><?php if (isset($Sak['Status'])) { echo $Sak['Status']; } else { echo "&nbsp;"; } ?></span>
+    </div>
 
-  <p class="handlinger">
-    <label>&nbsp;</label>
-<?php if ($Redigerbar == 1) { ?>
-    <input type="submit" value="Lagre" <?php if (!in_array('801',$UABruker['UAP'])) { echo "disabled "; } ?>/>
-<?php } ?>
+    <div class="form-group">
+      <input type="submit" class="btn btn-primary" value="Lagre" <?php if (!in_array('801',$UABruker['UAP'])) { echo "disabled "; } ?>/>
 <?php if ($Sak['SaksNummer'] == 0) { ?>
-    <input type="button" value="Godkjenn" onclick="javascript:document.location.href='<?php echo site_url(); ?>/raadet/lagsaksnummer/?sid=<?php echo $Sak['SakID']; ?>';" <?php if (!in_array('803',$UABruker['UAP'])) { echo "disabled "; } ?>/>
+      <input type="button" class="btn btn-success" value="Godkjenn" onclick="javascript:document.location.href='<?php echo site_url(); ?>/raadet/lagsaksnummer/?sid=<?php echo $Sak['SakID']; ?>';" <?php if (!in_array('803',$UABruker['UAP'])) { echo "disabled "; } ?>/>
 <?php } ?>
-  </p>
-</fieldset>
+    </div>
+  </div>
+</div>
 <?php echo form_close(); ?>
 
 <?php if ($Sak['SakID'] > 0) { ?>
-<fieldset>
-  <legend>Notater</legend>
+<div class="panel panel-default">
+  <div class="panel-heading">Saksnotater</div>
+  <div class="panel-body">
 
-  <table>
 <?php
   if (isset($Notater)) {
     foreach ($Notater as $Notat) {
 ?>
-    <tr>
-      <td><?php echo date("d.m.Y",strtotime($Notat['DatoRegistrert'])); ?></td>
-      <td><?php echo $Notat['PersonNavn']; ?></td>
-      <td><?php echo nl2br($Notat['Notat']); ?></td>
-    </tr>
+    <div class="panel panel-default <?php echo ($Notat['Notatstype'] == 'Vedtak' ? 'panel-success' : 'panel-info'); ?>">
+      <div class="panel-heading"><?php echo date('d.m.Y H:i',strtotime($Notat['DatoRegistrert'])).", av ".$Notat['PersonNavn']; ?></div>
+      <div class="panel-body"><?php echo nl2br($Notat['Notat']); ?></div>
+    </div>
 <?php
     }
   }
 ?>
-  </table>
-</fieldset>
-
 <?php echo form_open('raadet/nyttnotat'); ?>
 <input type="hidden" name="SakID" value="<?php echo $Sak['SakID']; ?>" />
-<fieldset>
-  <legend>Nytt notat</legend>
-
-  <p>
-    <label for="Notatstype">Notatstype:</label>
-    <select name="Notatstype" id="Notatstype">
-      <option value="0">Kommentar</option>
+    <div class="panel panel-default">
+      <div class="panel-heading">Nytt notat</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <select name="Notatstype" id="Notatstype" class="form-control">
+            <option value="0">Kommentar</option>
 <?php if ($Sak['StatusID'] == 0) { ?>
-      <option value="1">Notat</option>
-      <option value="2">Vedtak</option>
+            <option value="1">Notat</option>
+            <option value="2">Vedtak</option>
 <?php } ?>
-    </select>
-  </p>
-
-  <p>
-    <label for="Notat">Notat:</label>
-    <textarea name="Notat" id="Notat"></textarea>
-  </p>
-
-  <p class="handlinger">
-    <label>&nbsp;</label>
-    <input type="submit" value="Legg inn notat" />
-  </p>
-</fieldset>
+          </select>
+        </div>
+        <div class="form-group">
+          <textarea name="Notat" id="Notat" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <input type="submit" class="btn btn-primary btn-xs" value="Legg inn notat" />
+        </div>
+      </div>
+    </div>
 <?php echo form_close(); ?>
+  </div>
+</div>
 <?php } ?>

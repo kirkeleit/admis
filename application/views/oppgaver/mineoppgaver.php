@@ -1,4 +1,4 @@
-<h3 class="sub-header">Mine oppgaver <?php echo anchor('/oppgaver/nyoppgave','<span class="glyphicon glyphicon-plus"></span>'); ?></h3>
+<h3 class="sub-header">Mine oppgaver <a href="<?php echo site_url('/oppgaver/nyoppgave'); ?>" class="btn btn-default" role="button"><span class="glyphicon glyphicon-plus"></span></a></h3>
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>

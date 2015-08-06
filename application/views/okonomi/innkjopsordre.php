@@ -137,7 +137,7 @@
       $i++;
       $TotalSum = $TotalSum + $Linje['Sum'];
 ?>
-  <tr<?php if ($Linje['Antall'] == $Linje['Levert']) { ?> style="text-decoration:line-through;"<?php } ?>>
+  <tr<?php if ($Linje['StatusID'] == 2) { ?> class="success"<?php } else { ?> class="danger"<?php } ?>>
     <td><?php echo $Linje['Varenummer']; ?></td>
     <td><?php echo $Linje['Varenavn']; ?></td>
     <td>kr <?php echo number_format($Linje['Pris'],2,',','.'); ?></td>

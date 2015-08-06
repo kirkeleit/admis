@@ -1,6 +1,9 @@
 <?php echo form_open('kontakter/medlemsgruppe'); ?>
 <input type="hidden" name="GruppeID" id="GruppeID" value="<?php echo set_value('GruppeID',$Gruppe['GruppeID']); ?>" />
+<div class="panel panel-default">
+  <div class="panel-heading">Medlemsgruppe</div>
 
+  <div class="panel-body">
   <div class="form-group">
     <label for="Navn">Navn:</label>
     <input type="text" class="form-control" name="Navn" id="Navn" value="<?php echo set_value('Navn',$Gruppe['Navn']); ?>" />
@@ -19,8 +22,10 @@
   </div>
 
   <div class="form-group">
-    <input type="submit" class="btn btn-default" value="Lagre" name="GruppeLagre" />
+    <input type="submit" class="btn btn-primary" value="Lagre" name="GruppeLagre" />
   </div>
+  </div>
+</div>
 <?php echo form_close(); ?>
 
 <div class="panel panel-default">

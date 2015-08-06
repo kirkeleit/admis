@@ -1,4 +1,4 @@
-<?php echo form_open('oppgaver/oppgave/'); ?>
+<?php echo form_open('oppgaver/oppgave/'.$Oppgave['OppgaveID']); ?>
 <input type="hidden" name="OppgaveID" value="<?php echo set_value('OppgaveID',$Oppgave['OppgaveID']); ?>" />
 <div class="panel panel-default">
   <div class="panel-heading"><h4>Oppgave</h4></div>
@@ -46,25 +46,6 @@
     </div>
 
     <div class="form-group">
-      <label for="Notat" style="vertical-align: top">Arbeid utført:</label>
-<?php if (isset($Oppgave['Notater'])) { ?>
-      <table>
-<?php foreach ($Oppgave['Notater'] as $Notat) { ?>
-        <tr>
-          <td><?php echo date("d.m.Y H:i",strtotime($Notat['DatoRegistrert'])); ?></td>
-          <td><?php echo $Notat['Notat']; ?></td>
-        </tr>
-<?php } ?>
-      </table>
-    </div>
-
-    <div class="form-group">
-      <label>&nbsp;</label>
-<?php } ?>
-      <textarea name="Notat" class="form-control" id="Notat" style="height: 40px;" placeholder="Hva er gjort i forbindelse med oppgaven."></textarea>
-    </div>
-
-    <div class="form-group">
       <label for="StatusID">Status:</label>
       <select name="StatusID" class="form-control">
         <option value="0"<?php echo set_select('StatusID',0,($Oppgave['StatusID'] == 0) ? TRUE : FALSE); ?> disabled>Ikke påbegynt</option>
@@ -74,8 +55,35 @@
     </div>
 
     <div class="form-group">
-      <input type="submit" class="btn btn-default" value="Lagre" name="OppgaveLagre" />
-      <input type="submit" class="btn btn-default" value="Slett" name="OppgaveSlett" />
+      <div class="btn-group">
+        <input type="submit" class="btn btn-primary" value="Lagre" name="OppgaveLagre" />
+        <input type="submit" class="btn btn-danger" value="Slett" name="OppgaveSlett" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Utført arbeid</div>
+  <div class="panel-body">
+<?php if (isset($Oppgave['Notater'])) { ?>
+<?php foreach ($Oppgave['Notater'] as $Notat) { ?>
+    <div class="panel panel-default panel-info">
+      <div class="panel-heading"><?php echo date('d.m.Y H:i',strtotime($Notat['DatoRegistrert'])).", av ".$Notat['PersonNavn']; ?></div>
+      <div class="panel-body"><?php echo nl2br($Notat['Notat']); ?></div>
+    </div>
+<?php } ?>
+<?php }?>
+    <div class="panel panel-default">
+      <div class="panel-heading">&nbsp;</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <textarea name="Notat" class="form-control" id="Notat" style="height: 40px;" placeholder="Hva er gjort i forbindelse med oppgaven."></textarea>
+        </div>
+        <div class="form-group">
+          <input type="submit" class="btn btn-primary btn-xs" value="Legg inn arbeid" name="OppgaveLagre" />
+        </div>
+      </div>
     </div>
   </div>
 </div>

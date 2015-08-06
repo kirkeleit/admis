@@ -1,4 +1,4 @@
-<h3 class="sub-header">Prosjekter</h3>
+<h3 class="sub-header">Prosjekter <a href="<?php echo site_url('/prosjekter/nyttprosjekt'); ?>" class="btn btn-default" role="button"><span class="glyphicon glyphicon-plus"></span></a></h3>
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>
@@ -14,18 +14,27 @@
     <tbody>
 <?php
   if (isset($Prosjekter)) {
+    $TotalBudsjettramme = 0;
     foreach ($Prosjekter as $Prosjekt) {
+      $TotalBudsjettramme = $TotalBudsjettramme + $Prosjekt['Budsjettramme'];
 ?>
       <tr>
-        <td><?php echo $Prosjekt['ProsjektAr']; ?></td>
-        <td><a href="<?php echo site_url(); ?>/prosjekter/prosjekt/<?php echo $Prosjekt['ProsjektID']; ?>"><?php echo $Prosjekt['Prosjektnavn']; ?></a></td>
-        <td><?php echo $Prosjekt['FaggruppeNavn']; ?></td>
-        <td><?php echo $Prosjekt['PersonProsjektlederNavn']; ?></td>
-        <td>kr <?php echo number_format($Prosjekt['Budsjettramme'], 0, ',', '.'); ?></td>
-        <td><?php echo $Prosjekt['Status']; ?></td>
+        <td><?php echo anchor('/prosjekter/prosjekt/'.$Prosjekt['ProsjektID'],$Prosjekt['ProsjektAr']); ?></td>
+        <td><?php echo anchor('/prosjekter/prosjekt/'.$Prosjekt['ProsjektID'],$Prosjekt['Prosjektnavn']); ?></a></td>
+        <td><?php echo anchor('/prosjekter/prosjekt/'.$Prosjekt['ProsjektID'],($Prosjekt['FaggruppeNavn'] != '' ? $Prosjekt['FaggruppeNavn'] : '&nbsp;')); ?></td>
+        <td><?php echo anchor('/prosjekter/prosjekt/'.$Prosjekt['ProsjektID'],($Prosjekt['PersonProsjektlederNavn'] != '' ? $Prosjekt['PersonProsjektlederNavn'] : '&nbsp;')); ?></td>
+        <td class="text-right"><?php echo anchor('/prosjekter/prosjekt/'.$Prosjekt['ProsjektID'],'kr '.number_format($Prosjekt['Budsjettramme'], 0, ',', '.')); ?></td>
+        <td><?php echo anchor('/prosjekter/prosjekt/'.$Prosjekt['ProsjektID'],$Prosjekt['Status']); ?></td>
       </tr>
 <?php
     }
+?>
+      <tr>
+        <td colspan="4">&nbsp;</td>
+        <td class="text-right"><?php echo 'kr '.number_format($TotalBudsjettramme,0,',','.'); ?></td>
+        <td>&nbsp;</td>
+      </tr>
+<?php
   } else {
 ?>
       <tr>

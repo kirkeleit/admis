@@ -3,9 +3,39 @@
 
     var $InnkjopsordreStatus = array(0 =>'Registrert',1=>'Under planlegging',2=>'Til godkjenning',3=>'Godkjent',4=>'Bestilt',5=>'Levert',6=>'Fullført');
     var $InnkjopslinjeStatus = array(0 => 'Ikke bestilt', 1 => 'Bestilt', 2 => 'Levert');
+    var $FakturaStatus = array(0 => 'Under arbeid', 1 => 'Til fakturering', 3 => 'Fakturert');
 
-    function innkjopsordrer() {
-      $rordrer = $this->db->query("SELECT OrdreID,DatoRegistrert,DatoEndret,ProsjektID,(SELECT Prosjektnavn FROM Prosjekter WHERE (ProsjektID=o.ProsjektID) LIMIT 1) AS Prosjektnavn,Referanse,PersonAnsvarligID,(SELECT Fornavn FROM Personer WHERE (PersonID=o.PersonAnsvarligID) LIMIT 1) AS PersonAnsvarligNavn,StatusID FROM Innkjopsordrer o WHERE (StatusID < 6) ORDER BY DatoRegistrert ASC");
+    function okonomioversikt() {
+      for ($i=1; $i<=12; $i++) {
+        $oversikt[$i]['Inntekter'] = 0;
+        $oversikt[$i]['Utgifter'] = 0;
+        $oversikt[$i]['Utlegg'] = 0;
+        $oversikt[$i]['Reiseutgifter'] = 0;
+      }
+      $rinntekter = $this->db->query("SELECT MONTH(DatoBokfort) AS Maned,SUM(Belop) AS Inntekter FROM Inntekter WHERE (YEAR(DatoBokfort)=YEAR(CURDATE())) GROUP BY YEAR(DatoBokfort), MONTH(DatoBokfort)");
+      foreach ($rinntekter->result_array() as $inntekt) {
+        $oversikt[$inntekt['Maned']]['Inntekter'] = $inntekt['Inntekter'];
+      }
+      $rutgifter = $this->db->query("SELECT MONTH(DatoBokfort) AS Maned,SUM(Belop) AS Utgifter FROM Utgifter WHERE (YEAR(DatoBokfort)=YEAR(CURDATE())) GROUP BY YEAR(DatoBokfort), MONTH(DatoBokfort)");
+      foreach ($rutgifter->result_array() as $utgift) {
+        $oversikt[$utgift['Maned']]['Utgifter'] = $utgift['Utgifter'];
+      }
+      $rutlegg = $this->db->query("SELECT MONTH(DatoUtlegg) AS Maned,SUM(Belop) AS Utlegg FROM Utleggskvitteringer WHERE (YEAR(DatoUtlegg)=YEAR(CURDATE())) AND (DatoGodkjent != '0000-00-00 00:00:00') GROUP BY YEAR(DatoUtlegg), MONTH(DatoUtlegg)");
+      foreach ($rutlegg->result_array() as $utlegg) {
+        $oversikt[$utlegg['Maned']]['Utlegg'] = $utlegg['Utlegg'];
+      }
+      return $oversikt;
+    }
+
+    function innkjopsordrer($filter = null) {
+      $sql = "SELECT OrdreID,DatoRegistrert,DatoEndret,ProsjektID,(SELECT Prosjektnavn FROM Prosjekter WHERE (ProsjektID=o.ProsjektID) LIMIT 1) AS Prosjektnavn,Referanse,PersonAnsvarligID,(SELECT Fornavn FROM Personer WHERE (PersonID=o.PersonAnsvarligID) LIMIT 1) AS PersonAnsvarligNavn,(SELECT SUM(Pris*Antall) FROM InnkjopsordreLinjer ol WHERE (ol.OrdreID=o.OrdreID)) AS OrdreSum,StatusID FROM Innkjopsordrer o WHERE (StatusID < 6)";
+      if ($filter != NULL) {
+        if (isset($filter['ProsjektID'])) {
+          $sql = $sql." AND (ProsjektID=".$filter['ProsjektID'].")";
+        }
+      }
+      $sql = $sql." ORDER BY DatoRegistrert ASC";
+      $rordrer = $this->db->query($sql);
       foreach ($rordrer->result_array() as $ordre) {
         $ordre['Sum'] = 0;
         $ordre['Status'] = $this->InnkjopsordreStatus[$ordre['StatusID']];
@@ -179,8 +209,8 @@
       $resultat = $this->db->query($sql);
       foreach ($resultat->result() as $rad) {
         $utgift['UtgiftID'] = $rad->UtgiftID;
-        $utgift['DatoRegistrert'] = date('d.m.Y',strtotime($rad->DatoRegistrert));
-        $utgift['DatoBokfort'] = date('d.m.Y',strtotime($rad->DatoBokfort));
+        $utgift['DatoRegistrert'] = $rad->DatoRegistrert;
+        $utgift['DatoBokfort'] = $rad->DatoBokfort;
         $utgift['PersonID'] = $rad->PersonID;
         $personer = $this->db->query("SELECT * FROM Medlemmer,Personer WHERE (Medlemmer.PersonID=Personer.PersonID) AND (Personer.PersonID=".$rad->PersonID.") LIMIT 1");
         if ($person = $personer->row()) {
@@ -224,18 +254,8 @@
     }
 
     function utgift($ID) {
-      $resultat = $this->db->query("SELECT * FROM Utgifter WHERE (UtgiftID=".$ID.") LIMIT 1");
-      if ($rad = $resultat->row()) {
-        $utgift['UtgiftID'] = $rad->UtgiftID;
-        $utgift['DatoRegistrert'] = $rad->DatoRegistrert;
-        $utgift['DatoEndret'] = $rad->DatoEndret;
-        $utgift['DatoBokfort'] = date('d.m.Y',strtotime($rad->DatoBokfort));
-        $utgift['PersonID'] = $rad->PersonID;
-        $utgift['AktivitetID'] = $rad->AktivitetID;
-        $utgift['KontoID'] = $rad->KontoID;
-        $utgift['ProsjektID'] = $rad->ProsjektID;
-        $utgift['Beskrivelse'] = $rad->Beskrivelse;
-        $utgift['Belop'] = $rad->Belop;
+      $rutgifter = $this->db->query("SELECT UtgiftID,DatoRegistrert,DatoEndret,DatoBokfort,PersonID,AktivitetID,KontoID,ProsjektID,Beskrivelse,Belop FROM Utgifter WHERE (UtgiftID=".$ID.") LIMIT 1");
+      if ($utgift = $rutgifter->row_array()) {
         $filer = $this->db->query("SELECT * FROM FilXUtgifter, Filer WHERE (Filer.FilID=FilXUtgifter.FilID) AND (FilXUtgifter.UtgiftID=".$utgift['UtgiftID'].")");
         foreach ($filer->result() as $fil) {
           $utgift['Filer'][$fil->FilID] = $fil->Filnavn;
@@ -244,20 +264,17 @@
       }
     }
 
-    function lagreutgift($utgift) {
-      if ($utgift['UtgiftID'] == 0) {
-        $this->db->query("INSERT INTO Utgifter (DatoRegistrert) VALUES (Now())");
+    function lagreutgift($ID = null, $utgift) {
+      $utgift['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $utgift['DatoRegistrert'] = $utgift['DatoEndret'];
+        $this->db->query($this->db->insert_string('Utgifter',$utgift));
         $utgift['UtgiftID'] = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Utgifter',$utgift,'UtgiftID='.$ID));
+        $utgift['UtgiftID'] = $ID;
       }
-      $this->db->query("UPDATE Utgifter SET PersonID=".$utgift['PersonID']." WHERE UtgiftID=".$utgift['UtgiftID']." LIMIT 1");
-      $this->db->query("UPDATE Utgifter SET AktivitetID='".$utgift['AktivitetID']."' WHERE UtgiftID=".$utgift['UtgiftID']." LIMIT 1");
-      $this->db->query("UPDATE Utgifter SET KontoID='".$utgift['KontoID']."' WHERE UtgiftID=".$utgift['UtgiftID']." LIMIT 1");
-      $this->db->query("UPDATE Utgifter SET ProsjektID=".$utgift['ProsjektID']." WHERE UtgiftID=".$utgift['UtgiftID']." LIMIT 1");
-      $this->db->query("UPDATE Utgifter SET DatoBokfort='".date('Y-m-d',strtotime($utgift['DatoBokfort']))."' WHERE UtgiftID=".$utgift['UtgiftID']." LIMIT 1");
-      $this->db->query("UPDATE Utgifter SET Beskrivelse='".$utgift['Beskrivelse']."' WHERE UtgiftID=".$utgift['UtgiftID']." LIMIT 1");
-      $this->db->query("UPDATE Utgifter SET Belop='".$utgift['Belop']."' WHERE UtgiftID=".$utgift['UtgiftID']." LIMIT 1");
-      $this->db->query("UPDATE Utgifter SET DatoEndret=Now() WHERE UtgiftID=".$utgift['UtgiftID']." LIMIT 1");
-      return $utgift['UtgiftID'];
+      return $utgift;
     }
 
     function slettutgift($ID) {
@@ -486,7 +503,7 @@
       $this->db->query("UPDATE Utleggskvitteringer SET PersonID=".$utlegg['PersonID']." WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
       $this->db->query("UPDATE Utleggskvitteringer SET AktivitetID='".$utlegg['AktivitetID']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
       $this->db->query("UPDATE Utleggskvitteringer SET ProsjektID='".$utlegg['ProsjektID']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
-      $this->db->query("UPDATE Utleggskvitteringer SET DatoUtlegg='".date('Y-m-d',strtotime($utlegg['DatoUtlegg']))."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
+      $this->db->query("UPDATE Utleggskvitteringer SET DatoUtlegg='".$utlegg['DatoUtlegg']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
       $this->db->query("UPDATE Utleggskvitteringer SET Kontonummer='".str_replace('.','',$utlegg['Kontonummer'])."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
       $this->db->query("UPDATE Utleggskvitteringer SET Beskrivelse='".$utlegg['Beskrivelse']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
       $this->db->query("UPDATE Utleggskvitteringer SET Belop='".$utlegg['Belop']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
@@ -537,6 +554,37 @@
       if (isset($tilutbetaling)) {
       return $tilutbetaling;
       }
+    }
+
+    function fakturaer() {
+      $rfaktuaer = $this->db->query("SELECT FakturaID,DatoRegistrert,DatoFakturadato,OrganisasjonID,(SELECT Navn FROM Organisasjoner WHERE (Organisasjoner.OrganisasjonID=f.OrganisasjonID) LIMIT 1) AS OrganisasjonNavn,PersonID,(SELECT Fornavn FROM Personer WHERE (Personer.PersonID=f.PersonID) LIMIT 1) AS PersonNavn,AdresseID,PersonAnsvarligID,(SELECT Fornavn FROM Personer WHERE (Personer.PersonID=f.PersonAnsvarligID) LIMIT 1) AS PersonAnsvarligNavn,Referanse,(SELECT SUM(Pris*Antall) FROM FakturaLinjer WHERE (FakturaLinjer.FakturaID=f.FakturaID)) AS FakturaSum,StatusID FROM Fakturaer f ORDER BY DatoFakturadato ASC");
+      foreach ($rfaktuaer->result_array() as $faktura) {
+        $faktura['Status'] = $this->FakturaStatus[$faktura['StatusID']];
+        $fakturaer[] = $faktura;
+      }
+      if (isset($fakturaer)) {
+        return $fakturaer;
+      }
+    }
+
+    function faktura($ID) {
+      $rfakturaer = $this->db->query("SELECT FakturaID,Referanse,Notater,PersonAnsvarligID FROM Fakturaer WHERE (FakturaID=".$ID.") LIMIT 1");
+      if ($faktura = $rfakturaer->row_array()) {
+        return $faktura;
+      }
+    }
+
+    function lagrefaktura($ID = null, $faktura) {
+      $faktura['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $faktura['DatoRegistrert'] = $faktura['DatoEndret'];
+        $this->db->query($this->db->insert_string('Fakturaer',$faktura));
+        $faktura['FakturaID'] = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Fakturaer',$faktura,'FakturaID='.$ID));
+        $faktura['FakturaID'] = $ID;
+      }
+      return $faktura;
     }
 
   }

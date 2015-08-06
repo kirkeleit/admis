@@ -12,6 +12,12 @@ class Prosjekter extends CI_Controller {
     $this->template->load('standard','prosjekter/prosjekter',$data);
   }
 
+  public function tidslinje() {
+    $this->load->model('Prosjekter_model');
+    $data['Prosjekter'] = $this->Prosjekter_model->prosjekter();
+    $this->template->load('standard','prosjekter/tidslinje',$data);
+  }
+
   public function prosjektarkiv() {
     $this->load->model('Prosjekter_model');
     $data['Prosjekter'] = $this->Prosjekter_model->prosjekter(array("Arkiv" => "1"));
@@ -58,6 +64,7 @@ class Prosjekter extends CI_Controller {
       $data['Faggrupper'] = $this->Kontakter_model->faggrupper();
       $data['Medlemmer'] = $this->Kontakter_model->medlemmer();
       $data['Prosjekt'] = $this->Prosjekter_model->prosjekt($this->uri->segment(3));
+      $data['Innkjopsordrer'] = $this->Okonomi_model->innkjopsordrer(array('ProsjektID' => $this->uri->segment(3)));
       $data['Utgifter'] = $this->Okonomi_model->utgifter(array('ProsjektID' => $this->uri->segment(3)));
       $this->template->load('standard','prosjekter/prosjekt',$data);
     }

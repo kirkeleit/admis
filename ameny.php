@@ -11,7 +11,9 @@
   $AModul = array('Navn' => 'Oppgaver', 'URL' => 'oppgaver', 'UAP' => 600, 'Meny' => $AMeny);
   $AModuler[] = $AModul;
 
-  $AMeny = array(array('Navn' => 'Innkjøpsordrer', 'URL' => 'innkjopsordrer', 'UAP' => 300, 'NyLink' => 'nyinnkjopsordre'),
+  $AMeny = array(array('Navn' => 'Oversikt', 'URL' => 'oversikt', 'UAP' => 300),
+                 array('Navn' => 'Fakturaer', 'URL' => 'fakturaer', 'UAP' => 300),
+                 array('Navn' => 'Innkjøpsordrer', 'URL' => 'innkjopsordrer', 'UAP' => 300, 'NyLink' => 'nyinnkjopsordre'),
                  array('Navn' => 'Varemottak', 'URL' => 'varemottak', 'UAP' => 300),
                  array('Navn' => 'Utgifter', 'URL' => 'utgifter', 'UAP' => 300, 'NyLink' => 'nyutgift'),
                  array('Navn' => 'Inntekter', 'URL' => 'inntekter', 'UAP' => 300, 'NyLink' => 'nyinntekt'),
@@ -31,6 +33,7 @@
   $AModuler[] = $AModul;
 
   $AMeny = array(array('Navn' => 'Prosjekter', 'URL' => 'prosjektliste', 'UAP' => 800, 'NyLink' => 'nyttprosjekt'),
+                 array('Navn' => 'Tidslinje', 'URL' => 'tidslinje', 'UAP' => 800),
                  array('Navn' => 'Prosjektarkiv', 'URL' => 'prosjektarkiv', 'UAP' => 800));
   $AModul = array('Navn' => 'Prosjekter', 'URL' => 'prosjekter', 'UAP' => 500, 'Meny' => $AMeny);
   $AModuler[] = $AModul;

@@ -1,183 +1,229 @@
-<?php
-  /*$Redigerbar1 = 0;
-  $Redigerbar2 = 0;
-  if (($Prosjekt['ProsjektID'] == 0) and (in_array('502',$UABruker['UAP']))) {
-    $Redigerbar1 = 1;
-    $Redigerbar2 = 1;
-  } elseif (($Prosjekt['StatusID'] < 2) and (($UABruker['ID'] == $Prosjekt['PersonProsjektlederID']) or (in_array('503',$UABruker['UAP']))))  {
-    $Redigerbar1 = 1;
-  }
-  if (($UABruker['ID'] == $Prosjekt['PersonProsjektlederID']) or (in_array('503',$UABruker['UAP'])))  {
-    $Redigerbar2 = 1;
-  }*/
-?>
 <?php echo form_open('prosjekter/prosjekt/'.$Prosjekt['ProsjektID']); ?>
 <input type="hidden" name="ProsjektID" id="ProsjektID" value="<?php echo set_value('ProsjektID',$Prosjekt['ProsjektID']); ?>" />
-<fieldset>
-  <legend>Prosjekt</legend>
 
-  <p>
-    <label for="ProsjektAr">Prosjektår:</label>
-    <input type="number" name="ProsjektAr" id="ProsjektAr" value="<?php echo set_value('ProsjektAr',($Prosjekt['ProsjektAr'] == '' ? date('Y') : $Prosjekt['ProsjektAr'])); ?>" required />
-  </p>
+<div class="panel panel-default">
+  <div class="panel-heading"><h4>Prosjekt</h4></div>
 
-  <p>
-    <label for="FaggruppeID">Faggruppe:</label>
-    <select name="FaggruppeID" id="FaggruppeID">
-      <option value="0" <?php echo set_select('FaggruppeID',0,($Prosjekt['FaggruppeID'] == 0) ? TRUE : FALSE); ?>>(ikke valgt)</option>
+  <div class="panel-body">
+
+    <div class="form-group">
+      <label for="ProsjektAr">Prosjektår:</label>
+      <input type="number" class="form-control" name="ProsjektAr" id="ProsjektAr" value="<?php echo set_value('ProsjektAr',($Prosjekt['ProsjektAr'] == '' ? date('Y') : $Prosjekt['ProsjektAr'])); ?>" required />
+    </div>
+
+    <div class="form-group">
+      <label for="FaggruppeID">Faggruppe:</label>
+      <select name="FaggruppeID" id="FaggruppeID" class="form-control">
+        <option value="0" <?php echo set_select('FaggruppeID',0,($Prosjekt['FaggruppeID'] == 0) ? TRUE : FALSE); ?>>(ikke valgt)</option>
 <?php
   if (isset($Faggrupper)) {
     foreach ($Faggrupper as $Faggruppe) {
 ?>
-      <option value="<?php echo $Faggruppe['FaggruppeID']; ?>" <?php echo set_select('FaggruppeID',$Faggruppe['FaggruppeID'],($Prosjekt['FaggruppeID'] == $Faggruppe['FaggruppeID']) ? TRUE : FALSE); ?>><?php echo $Faggruppe['Navn']; ?></option>
+        <option value="<?php echo $Faggruppe['FaggruppeID']; ?>" <?php echo set_select('FaggruppeID',$Faggruppe['FaggruppeID'],($Prosjekt['FaggruppeID'] == $Faggruppe['FaggruppeID']) ? TRUE : FALSE); ?>><?php echo $Faggruppe['Navn']; ?></option>
 <?php
     }
   }
 ?>
-    </select>
-  </p>
+      </select>
+    </div>
 
-  <p>
-    <label for="PersonProsjektlederID">Prosjektleder:</label>
-    <select name="PersonProsjektlederID" id="PersonProsjektlederID">
-      <option value="0" <?php echo set_select('PersonProsjektlederID',0,($Prosjekt['PersonProsjektlederID'] == 0) ? TRUE : FALSE); ?>>(ikke valgt)</option>
+    <div class="form-group">
+      <label for="PersonProsjektlederID">Prosjektleder:</label>
+      <select name="PersonProsjektlederID" id="PersonProsjektlederID" class="form-control">
+        <option value="0" <?php echo set_select('PersonProsjektlederID',0,($Prosjekt['PersonProsjektlederID'] == 0) ? TRUE : FALSE); ?>>(ikke valgt)</option>
 <?php
   if (isset($Medlemmer)) {
     foreach ($Medlemmer as $Person) {
 ?>
-      <option value="<?php echo $Person['PersonID']; ?>" <?php echo set_select('PersonProsjektlederID',$Person['PersonID'],($Prosjekt['PersonProsjektlederID'] == $Person['PersonID']) ? TRUE : FALSE); ?>><?php echo $Person['Fornavn']." ".$Person['Etternavn']; ?></option>
+        <option value="<?php echo $Person['PersonID']; ?>" <?php echo set_select('PersonProsjektlederID',$Person['PersonID'],($Prosjekt['PersonProsjektlederID'] == $Person['PersonID']) ? TRUE : FALSE); ?>><?php echo $Person['Fornavn']." ".$Person['Etternavn']; ?></option>
 <?php
     }
   }
 ?>
-    </select>
-  </p>
+      </select>
+    </div>
 
-  <p>
-    <label for="DatoProsjektstart">Prosjektperiode:</label>
-    <input type="date" name="DatoProsjektstart" id="DatoProsjektstart" value="<?php echo date("d.m.Y",strtotime(set_value('DatoProsjektstart',$Prosjekt['DatoProsjektstart']))); ?>" />&nbsp;<input type="date" name="DatoProsjektslutt" id="DatoProsjektslutt" value="<?php echo date("d.m.Y",strtotime(set_value('DatoProsjektslutt',$Prosjekt['DatoProsjektslutt']))); ?>" />
-  </p>
+    <div class="form-group">
+      <label for="DatoProsjektstart">Prosjektperiode:</label>
+      <input type="date" class="form-control" name="DatoProsjektstart" id="DatoProsjektstart" value="<?php echo date("d.m.Y",strtotime(set_value('DatoProsjektstart',$Prosjekt['DatoProsjektstart']))); ?>" />
+      <input type="date" class="form-control" name="DatoProsjektslutt" id="DatoProsjektslutt" value="<?php echo date("d.m.Y",strtotime(set_value('DatoProsjektslutt',$Prosjekt['DatoProsjektslutt']))); ?>" />
+    </div>
 
-  <p>
-    <label for="Prosjektnavn">Prosjektnavn:</label>
-    <input type="text" name="Prosjektnavn" id="Prosjektnavn" value="<?php echo set_value('Prosjektnavn',$Prosjekt['Prosjektnavn']); ?>" required />
-  </p>
+    <div class="form-group">
+      <label for="Prosjektnavn">Prosjektnavn:</label>
+      <input type="text" class="form-control" name="Prosjektnavn" id="Prosjektnavn" value="<?php echo set_value('Prosjektnavn',$Prosjekt['Prosjektnavn']); ?>" required />
+    </div>
 
-  <p>
-    <label for="Formaal" style="vertical-align: top">Formål:</label>
-    <textarea name="Formaal" id="Formaal" rows="6" cols="46" required><?php echo set_value('Formaal',$Prosjekt['Formaal']); ?></textarea>
-  </p>
+    <div class="form-group">
+      <label for="Formaal" style="vertical-align: top">Formål:</label>
+      <textarea name="Formaal" class="form-control" id="Formaal" rows="6" cols="46" required><?php echo set_value('Formaal',$Prosjekt['Formaal']); ?></textarea>
+    </div>
 
-  <p>
-    <label for="Prosjektmaal" style="vertical-align: top">Prosjektmål:</label>
-    <textarea name="Prosjektmaal" id="Prosjektmaal" rows="6" cols="46" required><?php echo set_value('Prosjektmaal',$Prosjekt['Prosjektmaal']); ?></textarea>
-  </p>
+    <div class="form-group">
+      <label for="Prosjektmaal" style="vertical-align: top">Prosjektmål:</label>
+      <textarea name="Prosjektmaal" class="form-control" id="Prosjektmaal" rows="6" cols="46" required><?php echo set_value('Prosjektmaal',$Prosjekt['Prosjektmaal']); ?></textarea>
+    </div>
 
-  <p>
-    <label for="Maalgruppe" style="vertical-align: top">Målgruppe:</label>
-    <textarea name="Maalgruppe" id="Maalgruppe" rows="6" cols="46" required><?php echo set_value('Maalgruppe',$Prosjekt['Maalgruppe']); ?></textarea>
-  </p>
+    <div class="form-group">
+      <label for="Maalgruppe" style="vertical-align: top">Målgruppe:</label>
+      <textarea name="Maalgruppe" class="form-control" id="Maalgruppe" rows="6" cols="46" required><?php echo set_value('Maalgruppe',$Prosjekt['Maalgruppe']); ?></textarea>
+    </div>
 
-  <p>
-    <label for="Prosjektbeskrivelse" style="vertical-align: top">Prosjektbeskrivelse:</label>
-    <textarea name="Prosjektbeskrivelse" id="Prosjektbeskrivelse" rows="6" cols="46" required><?php echo set_value('Prosjektbeskrivelse',$Prosjekt['Prosjektbeskrivelse']); ?></textarea>
-  </p>
+    <div class="form-group">
+      <label for="Prosjektbeskrivelse" style="vertical-align: top">Prosjektbeskrivelse:</label>
+      <textarea name="Prosjektbeskrivelse" class="form-control" id="Prosjektbeskrivelse" rows="6" cols="46" required><?php echo set_value('Prosjektbeskrivelse',$Prosjekt['Prosjektbeskrivelse']); ?></textarea>
+    </div>
 
-  <p>
-    <label for="Arbeidstimer">Arbeidstimer:</label>
-    <input type="number" name="Arbeidstimer" value="<?php echo set_value('Arbeidstimer',$Prosjekt['Arbeidstimer']); ?>" />
-  </p>
+    <div class="form-group">
+      <label for="Arbeidstimer">Arbeidstimer:</label>
+      <input type="number" class="form-control" name="Arbeidstimer" value="<?php echo set_value('Arbeidstimer',$Prosjekt['Arbeidstimer']); ?>" />
+    </div>
 
-  <p>
-    <label for="Budsjettramme">Budsjettramme:</label>
-    <input type="number" name="Budsjettramme" id="Budsjettramme" value="<?php echo set_value('Budsjettramme',$Prosjekt['Budsjettramme']); ?>" step="1000" required />
-  </p>
+    <div class="form-group">
+      <label for="Budsjettramme">Budsjettramme:</label>
+      <input type="number" class="form-control" name="Budsjettramme" id="Budsjettramme" value="<?php echo set_value('Budsjettramme',$Prosjekt['Budsjettramme']); ?>" step="1000" required />
+    </div>
 
-  <p>
+  <div class="form-group">
     <label for="Status">Status:</label>
     <span><?php echo ($Prosjekt['Status'] == '' ? 'Under registrering' : $Prosjekt['Status']); ?></span>
-  </p>
+  </div>
 
-  <p class="handlinger">
-    <label>&nbsp;</label>
-    <input type="submit" value="Lagre" name="ProsjektLagre" />
-    <input type="submit" value="Slett" name="ProsjektSlett" />
-    <input type="submit" value="Send til godkjenning" />
-    <input type="submit" value="Godkjenn prosjekt" />
-    <input type="submit" value="Påbegynt" />
-    <input type="button" value="Fullført" />
-  </p>
+    <div class="form-group">
+      <div class="btn-group">
+        <input type="submit" value="Lagre" name="ProsjektLagre" class="btn btn-primary" />
+        <input type="submit" value="Slett" name="ProsjektSlett" class="btn btn-danger" />
+      </div>
+      <div class="btn-group">
+        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          Handling <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li><a href="#">Send til godkjenning</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Godkjenn prosjekt</a></li>
+          <li role="separator" class="divider"></li>
+          <li><a href="#">Sett til påbegynt</a></li>
+          <li><a href="#">Sett til fullført</a></li>
+        </ul>
+      </div>
+    </div>
 
-<script>
-  $('#SlettProsjekt').click(function(){
-    var r = confirm("Er du sikker?");
-    if (r) {
-      document.location.href='<?php echo site_url(); ?>/prosjekter/slettprosjekt/<?php echo $Prosjekt['ProsjektID']; ?>';
-    }
-  });
-</script>
-</fieldset>
+  </div>
+</div>
 <?php echo form_close(); ?>
 
-<?php if (isset($Utgifter)) { ?>
-<fieldset>
-  <legend>Utgifter</legend>
+<?php if (isset($Innkjopsordrer)) { ?>
+<?php $TotalOrdresum = 0; ?>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Innkjøpsordrer</h3>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-condensed">
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Referanse</th>
+          <th>Ansvarlig</th>
+          <th>Ordresum</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+<?php foreach ($Innkjopsordrer as $Ordre) { ?>
+<?php $TotalOrdresum = $TotalOrdresum + $Ordre['OrdreSum']; ?>
+        <tr>
+          <td><?php echo date('d.m.Y',strtotime($Ordre['DatoRegistrert'])); ?></td>
+          <td><?php echo $Ordre['Referanse']; ?></td>
+          <td><?php echo $Ordre['PersonAnsvarligNavn']; ?></td>
+          <td><?php echo 'kr '.number_format($Ordre['OrdreSum'],2,',','.'); ?></td>
+          <td><?php echo $Ordre['Status']; ?></td>
+        </tr>
+<?php } ?>
+        <tr>
+          <td colspan="3">&nbsp;</td>
+          <td><?php echo 'kr '.number_format($TotalOrdresum,2,',','.'); ?></td>
+          <td>&nbsp;</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+<?php } ?>
 
-  <table>
-    <tr>
-      <th>Dato</th>
-      <th>Initialer</th>
-      <th>Beskrivelse</th>
-      <th>Beløp</th>
-    </tr>
+<?php if (isset($Utgifter)) { ?>
+<div class="panel panel-default">
+  <div class="panel-heading">
+    <h3 class="panel-title">Utgifter</h3>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-striped table-hover table-condensed">
+      <thead>
+        <tr>
+          <th>Dato</th>
+          <th>Initialer</th>
+          <th>Beskrivelse</th>
+          <th>Beløp</th>
+        </tr>
 <?php
     $TotaleUtgifter = 0;
     foreach ($Utgifter as $Utgift) {
+      $TotaleUtgifter = $TotaleUtgifter + $Utgift['Belop'];
 ?>
     <tr>
-      <td><?php echo $Utgift['DatoBokfort']; ?></td>
+      <td><?php echo date('d.m.Y',strtotime($Utgift['DatoBokfort'])); ?></td>
       <td><?php echo $Utgift['PersonInitialer']; ?></td>
       <td><?php echo $Utgift['Beskrivelse']; ?></td>
-      <td style="text-align: right;">kr <?php echo number_format($Utgift['Belop'],2,',','.'); ?></td>
+      <td class="text-right"><?php echo 'kr '.number_format($Utgift['Belop'],2,',','.'); ?></td>
     </tr>
 <?php
-      $TotaleUtgifter = $TotaleUtgifter + $Utgift['Belop'];
     }
 ?>
-    <tr>
-      <td colspan="3"><b>Totalt:</b></td>
-      <td style="text-align: right;"><b>kr <?php echo number_format($TotaleUtgifter,2,',','.'); ?></b></td>
-    </tr>
-  </table>
-</fieldset>
+      <tr>
+        <td colspan="3">&nbsp;</td>
+        <td class="text-right"><?php echo 'kr '.number_format($TotaleUtgifter,2,',','.'); ?></td>
+      </tr>
+    </table>
+  </div>
+</div>
 <?php } ?>
 
 <?php if ($Prosjekt['ProsjektID'] > 0) { ?>
 <?php echo form_open('prosjekter/prosjekt/'.$Prosjekt['ProsjektID']); ?>
 <input type="hidden" name="ProsjektID" value="<?php echo $Prosjekt['ProsjektID']; ?>" />
-<fieldset>
-  <legend>Kommentarer</legend>
-<table>
+<div class="panel panel-default">
+  <div class="panel-heading">Kommentarer</div>
+  <div class="panel-body">
+
 <?php
   if (isset($Prosjekt['Kommentarer'])) {
     foreach ($Prosjekt['Kommentarer'] as $Kommentar) {
 ?>
-  <tr>
-    <td><?php echo date("d.m.Y H:i:s",strtotime($Kommentar['DatoRegistrert'])); ?></td>
-    <td><?php echo $Kommentar['PersonNavn']; ?></td>
-    <td><?php echo $Kommentar['Kommentar']; ?></td>
-  </tr>
+    <div class="panel panel-default panel-info">
+      <div class="panel-heading"><?php echo date('d.m.Y H:i',strtotime($Kommentar['DatoRegistrert'])).", av ".$Notat['PersonNavn']; ?></div>
+      <div class="panel-body"><?php echo nl2br($Kommentar['Kommentar']); ?></div>
+    </div>
 <?php
     }
   }
 ?>
+
 <?php if (($Prosjekt['StatusID'] < 5) and (in_array('501',$UABruker['UAP']))) { ?>
-  <tr>
-    <td colspan="2">&nbsp;</td>
-    <td><textarea name="NyKommentar"></textarea><input type="submit" value="Legg til" name="KommentarLagre" /></td>
-  </tr>
+    <div class="panel panel-default">
+      <div class="panel-heading">Nytt kommentar</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <textarea name="NyKommentar" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <input type="submit" class="btn btn-primary btn-xs" value="Legg inn kommentar" name="KommentarLagre" />
+        </div>
+      </div>
+    </div>
 <?php } ?>
-</table>
-</fieldset>
+
+  </div>
+</div>
 <?php echo form_close(); ?>
 <?php } ?>

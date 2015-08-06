@@ -3,23 +3,26 @@
     $Inntekter = 0;
     $Utgifter = 0;
 ?>
-<table>
-  <tr>
-    <th>&nbsp;</th>
+<table class="table table-bordered table-condensed table-responsive table-hover">
+  <thead>
+    <tr>
+      <th>&nbsp;</th>
 <?php foreach ($Aktiviteter as $Aktivitet) { ?>
-    <th colspan="2"><?php echo $Aktivitet['AktivitetID']." ".$Aktivitet['Navn']; ?></th>
+      <th colspan="2"><?php echo $Aktivitet['AktivitetID']." ".$Aktivitet['Navn']; ?></th>
 <?php } ?>
-    <th colspan="2">Totalt</th>
-  </tr>
-  <tr>
-    <th>Konto</th>
+      <th colspan="2" style="border-left: 2px solid black;">Totalt</th>
+    </tr>
+    <tr>
+      <th>Konto</th>
 <?php foreach ($Aktiviteter as $Aktivitet) { ?>
-    <th style="border-left: 1px solid black;">Bokført</th>
-    <th>Budsjett</th>
+      <th style="border-left: 1px solid black;">Bokført</th>
+      <th>Budsjett</th>
 <?php } ?>
-    <th style="border-left: 2px solid black;">Bokfort</th>
-    <th>Budsjett</th>
-  </tr>
+      <th style="border-left: 2px solid black;">Bokført</th>
+      <th>Budsjett</th>
+    </tr>
+  </thead>
+  <tbody>
 <?php
   foreach ($Resultat as $ID => $Data) {
     if (isset($Data[0])) {
@@ -30,13 +33,13 @@
   $i = 0;
   foreach ($Aktiviteter as $Aktivitet) {
 ?>
-    <td style="border-left: 1px solid black;"><?php echo number_format($Data[$i]['Bokfort'],2,',','.'); ?></td>
+    <td class="<?php echo ($Data['Type'] == 0 ? ($Data[$i]['Bokfort'] < $Data[$i]['Budsjett'] ? 'danger' : 'success') : ($Data[$i]['Bokfort'] > $Data[$i]['Budsjett'] ? 'danger' : '')); ?>"><?php echo number_format($Data[$i]['Bokfort'],2,',','.'); ?></td>
     <td><?php echo number_format($Data[$i]['Budsjett'],2,',','.'); ?></td>
 <?php
     $i++;
   }
 ?>
-    <td style="border-left: 2px solid black;"><?php echo number_format($Data['Bokfort'],2,',','.'); ?></td>
+    <td style="border-left: 2px solid black;" class="<?php echo ($Data['Type'] == 0 ? ($Data['Bokfort'] < $Data['Budsjett'] ? 'danger' : 'success') : ($Data['Bokfort'] > $Data['Budsjett'] ? 'danger' : '')); ?>"><?php echo number_format($Data['Bokfort'],2,',','.'); ?></td>
     <td><?php echo number_format($Data['Budsjett'],2,',','.'); ?></td>
   </tr>
 <?php
@@ -50,19 +53,20 @@
 ?>
   <tr>
     <td colspan="<?php echo ((sizeof($Aktiviteter) * 2) + 1); ?>"><b>Inntekter:</b></td>
-    <td><?php echo number_format($Inntekter,2,',','.'); ?></td>
+    <td style="border-left: 2px solid black;"><?php echo number_format($Inntekter,2,',','.'); ?></td>
     <td>&nbsp;</td>
   </tr>
   <tr>
     <td colspan="<?php echo ((sizeof($Aktiviteter) * 2) + 1); ?>"><b>Utgifter:</b></td>
-    <td><?php echo number_format($Utgifter,2,',','.'); ?></td>
+    <td style="border-left: 2px solid black;"><?php echo number_format($Utgifter,2,',','.'); ?></td>
     <td>&nbsp;</td>
   </tr>
   <tr>
     <td colspan="<?php echo ((sizeof($Aktiviteter) * 2) + 1); ?>"><b>Resultat:</b></td>
-    <td><?php echo number_format($Inntekter - $Utgifter,2,',','.'); ?></td>
+    <td style="border-left: 2px solid black;" class="<?php echo ($Inntekter - $Utgifter < 0 ? 'danger' : 'success'); ?>"><?php echo number_format($Inntekter - $Utgifter,2,',','.'); ?></td>
     <td>&nbsp;</td>
   </tr>
+  </tbody>
 </table>
 <?php
   } else {

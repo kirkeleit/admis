@@ -1,4 +1,4 @@
-<h2><?php echo $Person['Fornavn']." ".$Person['Etternavn']; ?></h2>
+<h3 class="sub-header"><?php echo $Person['Fornavn']." ".$Person['Etternavn']; ?></h3>
 <br />
 
 <?php echo form_open('kontakter/person'); ?>
@@ -98,7 +98,7 @@
 ?>
         <tr>
           <td><?php echo $Gruppe['Navn']; ?></td>
-          <td><input type="checkbox" name="FjernMedlemsgruppeID[]" value="<?php echo $Gruppe['GruppeID']; ?>" /></td>
+          <td><input type="checkbox" name="FjernMedlemsgruppeID[]" value="<?php echo $Gruppe['GruppeID']; ?>" class="form-control" /></td>
         </tr>
 <?php
     }
@@ -110,7 +110,7 @@
 
   <div class="panel-footer">
     <select name="NyMedlemsgruppeID">
-      <option value="0">Legg til i medlemsgruppe</option>
+      <option value="0" class="form-control">Legg til i medlemsgruppe</option>
 <?php
   if (isset($Medlemsgrupper)) {
     foreach ($Medlemsgrupper as $Gruppe) {
@@ -125,7 +125,7 @@
 </div>
 
 <div class="form-group">
-    <input type="submit" class="btn btn-default" value="Lagre" id="LagrePerson" name="PersonLagre" />
+    <input type="submit" class="btn btn-primary" value="Lagre" id="LagrePerson" name="PersonLagre" />
 <?php if ($Person['PersonID'] > 0) { ?>
     <!--<input type="button" value="Slett" onclick="javascript:document.location.href='<?php echo site_url(); ?>/kontakter/slettperson/<?php echo $Person['PersonID']; ?>';" />-->
 <?php } ?>
