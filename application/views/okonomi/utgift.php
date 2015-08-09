@@ -1,14 +1,13 @@
-<?php echo form_open_multipart('okonomi/utgift'); ?>
+<h3 class="sub-header">Utgiftsdetaljer</h3>
+
+<?php echo form_open_multipart('okonomi/utgift/'.$Utgift['UtgiftID']); ?>
 <input type="hidden" name="UtgiftID" value="<?php echo set_value('UtgiftID',$Utgift['UtgiftID']); ?>" />
-
 <div class="panel panel-default">
-  <div class="panel-heading">
-    <h3 class="panel-title">Utgift</h3>
-  </div>
+  <div class="panel-heading">&nbsp;</div>
+  
   <div class="panel-body">
-
     <div class="form-group">
-      <label for="PersonID">Medlem:</label>
+      <label for="PersonID">Person:</label>
       <select class="form-control" name="PersonID">
         <option value="0" <?php echo set_select('PersonID',0,($Utgift['PersonID'] == 0) ? TRUE : FALSE); ?>>(ingen medlem)</option>
 <?php
@@ -72,7 +71,7 @@
 
     <div class="form-group">
       <label for="DatoBokfort">Dato:</label>
-      <input type="date" class="form-control" name="DatoBokfort" value="<?php echo set_value('DatoBokfort',date("d.m.Y",strtotime($Utgift['DatoBokfort']))); ?>" />
+      <input type="date" class="form-control" name="DatoBokfort" value="<?php echo set_value('DatoBokfort',($Utgift['DatoBokfort'] != '' ? date("d.m.Y",strtotime($Utgift['DatoBokfort'])) : '')); ?>" />
     </div>
 
     <div class="form-group">

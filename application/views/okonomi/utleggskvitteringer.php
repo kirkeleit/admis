@@ -1,9 +1,9 @@
 <h3 class="sub-header">Utleggskvitteringer <a href="<?php echo site_url('/okonomi/nyutleggskvittering'); ?>" class="btn btn-default" role="button"><span class="glyphicon glyphicon-plus"></span></a></h3>
+
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>
       <tr>
-        <th>ID</th>
         <th>Dato</th>
         <th>Aktivitet</th>
         <th>Medlem</th>
@@ -17,12 +17,11 @@
     foreach ($Utleggskvitteringer as $Utlegg) {
 ?>
       <tr>
-        <td><a href="<?php echo site_url(); ?>/okonomi/utleggskvittering/<?php echo $Utlegg['UtleggID']; ?>"><?php echo $Utlegg['UtleggID']; ?></a></td>
-        <td><?php echo date("d.m.Y",strtotime($Utlegg['DatoUtlegg'])); ?></td>
-        <td><?php echo $Utlegg['AktivitetID']." ".$Utlegg['AktivitetNavn']; ?></td>
-        <td><?php echo $Utlegg['PersonNavn']; ?></td>
-        <td><?php echo "kr ".number_format($Utlegg['Belop'],2,',','.'); ?></td>
-        <td><?php echo $Utlegg['Status']; ?></td>
+        <td><?php echo anchor('/okonomi/utleggskvittering/'.$Utlegg['UtleggID'],date("d.m.Y",strtotime($Utlegg['DatoUtlegg']))); ?></td>
+        <td><?php echo anchor('/okonomi/utleggskvittering/'.$Utlegg['UtleggID'],$Utlegg['AktivitetID']." ".$Utlegg['AktivitetNavn']); ?></td>
+        <td><?php echo anchor('/okonomi/utleggskvittering/'.$Utlegg['UtleggID'],$Utlegg['PersonNavn']); ?></td>
+        <td><?php echo anchor('/okonomi/utleggskvittering/'.$Utlegg['UtleggID'],'kr '.number_format($Utlegg['Belop'],2,',','.')); ?></td>
+        <td><?php echo anchor('/okonomi/utleggskvittering/'.$Utlegg['UtleggID'],$Utlegg['Status']); ?></td>
       </tr>
 <?php
     }

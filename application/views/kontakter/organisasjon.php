@@ -1,11 +1,9 @@
-<h3 class="sub-header">Organisasjon</h3>
-<br />
+<h3 class="sub-header">Organisasjonsdetaljer</h3>
 
-<?php echo form_open('kontakter/organisasjon'); ?>
+<?php echo form_open('kontakter/organisasjon/'.$Organisasjon['OrganisasjonID']); ?>
 <input type="hidden" name="OrganisasjonID" id="OrganisasjonID" value="<?php echo set_value('OrganisasjonID',$Organisasjon['OrganisasjonID']); ?>" />
-
 <div class="panel panel-default">
-  <div class="panel-heading"><h4>Organisasjonsinfo</h4></div>
+  <div class="panel-heading">&nbsp;</div>
 
   <div class="panel-body">
     <div class="form-group">
@@ -14,12 +12,12 @@
     </div>
 
     <div class="form-group">
-      <label for="Orgnummer">Orgnummer:</label>
+      <label for="Orgnummer">Organisasjonsnummer:</label>
       <input type="number" class="form-control" name="Orgnummer" id="Orgnummer" value="<?php echo set_value('Orgnummer',$Organisasjon['Orgnummer']); ?>" />
     </div>
 
     <div class="form-group">
-      <label for="Telefonnr">Telefonnr:</label>
+      <label for="Telefonnr">Telefonnummer:</label>
       <input type="number" class="form-control" name="Telefonnr" id="Telefonnr" value="<?php echo set_value('Telefonnr',$Organisasjon['Telefonnr']); ?>" />
     </div>
 
@@ -29,7 +27,7 @@
     </div>
 
     <div class="panel panel-default">
-      <div class="panel-heading"><h4>Adresse</h4></div>
+      <div class="panel-heading">Adresse</div>
 
       <div class="panel-body">
         <input type="hidden" name="AdresseID" id="AdresseID" value="<?php echo set_value('AdresseID',$Organisasjon['Adresser'][0]['AdresseID']); ?>" />
@@ -52,9 +50,6 @@
     <div class="form-group">
       <div class="btn-group" role="group">
         <input type="submit" class="btn btn-primary" value="Lagre" id="LagreOrganisasjon" name="OrganisasjonLagre" />
-<?php if ($Organisasjon['OrganisasjonID'] > 0) { ?>
-        <input type="submit" class="btn btn-danger" value="Slett" onclick="javascript:document.location.href='http://admis.bomlork.no/index.php/kontakter/slettorganisasjon/<?php echo $Organisasjon['OrganisasjonID']; ?>';" />
-<?php } ?>
       </div>
     </div>
 

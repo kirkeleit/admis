@@ -1,51 +1,62 @@
-<?php echo form_open('materiell/produsent'); ?>
-<input type="hidden" name="ID" value="<?php echo set_value('ID',$Produsent['ID']); ?>" />
-<fieldset>
-  <legend>Produsent</legend>
+<h3 class="sub-header">Produsentdetaljer</h3>
 
-  <p>
-    <label for="Navn">Navn:</label>
-    <input type="text" name="Navn" id="Navn" value="<?php echo set_value('Navn',$Produsent['Navn']); ?>" />
-  </p>
+<?php echo form_open('materiell/produsent/'.$Produsent['ProdusentID']); ?>
+<input type="hidden" name="ProdusentID" value="<?php echo set_value('ProdusentID',$Produsent['ProdusentID']); ?>" />
+<div class="panel panel-default">
+  <div class="panel-heading">&nbsp;</div>
 
-  <p class="handlinger">
-    <label>&nbsp;</label>
-    <input type="submit" value="Lagre produsent" />
-  </p>
-</fieldset>
+  <div class="panel-body">
+    <div class="form-group">
+      <label for="Navn">Navn:</label>
+      <input type="text" class="form-control" name="Navn" id="Navn" value="<?php echo set_value('Navn',$Produsent['Navn']); ?>" />
+    </div>
+
+    <div class="form-group">
+      <input type="submit" class="btn btn-primary" value="Lagre produsent" />
+    </div>
+  </div>
+</div>
 <?php echo form_close(); ?>
 
 <?php if (isset($Utstyrsliste)) { ?>
-<fieldset>
-  <legend>Utstyr</legend>
+<div class="panel panel-default">
+  <div class="panel-heading">Utstyrsliste</div>
 
-  <table>
-    <tr>
-      <th>UID</th>
-      <th>Type</th>
-      <th>Produsent</th>
-      <th>Modell</th>
-      <th>Dato</th>
-      <th>Plass</th>
-      <th>Kasse</th>
-      <th>Status</th>
-    </tr>
+  <div class="panel-body">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>Type</th>
+            <th>Produsent</th>
+            <th>Modell</th>
+            <th>Dato</th>
+            <th>Plass</th>
+            <th>Kasse</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
 <?php
   foreach ($Utstyrsliste as $Utstyr) {
 ?>
-    <tr>
-      <td><a href="<?php echo site_url(); ?>/materiell/utstyr/<?php echo $Utstyr['ID']; ?>"><?php echo $Utstyr['UID']; ?></a></td>
-      <td><?php if (isset($Utstyr['Type'])) { echo $Utstyr['Type']['Navn']; } else { echo "&nbsp;"; } ?></td>
-      <td><?php if (isset($Utstyr['Produsent'])) { echo $Utstyr['Produsent']['Navn']; } else { echo "&nbsp;"; } ?></td>
-      <td><?php echo $Utstyr['Modell']; ?></td>
-      <td><?php echo $Utstyr['DatoAnskaffet']; ?></td>
-      <td><?php if (isset($Utstyr['Lagerplass'])) { echo $Utstyr['Lagerplass']['Navn']; } else { echo "&nbsp;"; } ?></td>
-      <td><?php if (isset($Utstyr['Kasse'])) { echo $Utstyr['Kasse']['Navn']; } else { echo "&nbsp;"; } ?></td>
-      <td><?php echo $Utstyr['Status']; ?></td>
-    </tr>
+          <tr>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],$Utstyr['UID']); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],(isset($Utstyr['TypeNavn']) ? $Utstyr['TypeNavn'] : '&nbsp;')); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],(isset($Utstyr['ProdusentNavn']) ? $Utstyr['ProdusentNavn'] : '&nbsp;')); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],$Utstyr['Modell']); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],date('d.m.Y',strtotime($Utstyr['DatoAnskaffet']))); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],(isset($Utstyr['LagerplassNavn']) ? $Utstyr['LagerplassNavn'] : '&nbsp;')); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],(isset($Utstyr['KasseNavn']) ? $Utstyr['KasseNavn'] : '&nbsp;')); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],$Utstyr['Status']); ?></td>
+          </tr>
 <?php
   }
 ?>
-  </table>
-</fieldset>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 <?php } ?>

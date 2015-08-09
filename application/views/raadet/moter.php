@@ -1,4 +1,5 @@
-<h2 class="sub-header">Møter</h2>
+<h3 class="sub-header">Møter</h3>
+
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>
@@ -27,7 +28,7 @@
   } else {
 ?>
       <tr>
-        <td colspan="3">Ingen møter registrert.</td>
+        <td colspan="5">Ingen møter i utvalg.</td>
       </tr>
 <?php
   }

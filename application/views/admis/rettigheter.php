@@ -12,6 +12,8 @@
   $Rettigheter[308] = "Vise til utbetaling";
   $Rettigheter[309] = "Godkjenne utlegg/reiseregning til utbetaling";
   $Rettigheter[310] = "Registrere reiseregning/utlegg som utbetalt";
+  $Rettigheter[311] = "Vise til fakturering";
+  $Rettigheter[312] = "Registrere faktura som fakturert";
   $Rettigheter[400] = "Materiell";
   $Rettigheter[401] = "Opprette data";
   $Rettigheter[402] = "Redigere data";
@@ -48,7 +50,7 @@
 <?php
   foreach ($Roller as $Rolle) {
 ?>
-    <td><input type="checkbox" name="Tilgang[<?php echo $Rolle['ID']; ?>][]" value="<?php echo $ID; ?>" <?php if (in_array($ID,unserialize($Rolle['UAP']))) { echo "checked "; } ?>/></td>
+    <td><input type="checkbox" name="Tilgang[<?php echo $Rolle['RolleID']; ?>][]" value="<?php echo $ID; ?>" <?php if (in_array($ID,unserialize($Rolle['UAP']))) { echo "checked "; } ?>/></td>
 <?php
   }
 ?>

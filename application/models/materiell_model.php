@@ -5,7 +5,7 @@
     var $ArrTSStatus = array(1 => "Ny", 2 => "Under arbeid", 3 => "Ferdig");
 
     function grupper() {
-      $rgrupper = $this->db->query("SELECT ID,Navn,(SELECT COUNT(*) FROM mat_utstyr WHERE (GruppeID=g.ID)) AS Antall FROM mat_grupper g ORDER BY Navn ASC");
+      $rgrupper = $this->db->query("SELECT GruppeID,Navn,Beskrivelse,(SELECT COUNT(*) FROM Utstyrsliste WHERE (GruppeID=g.GruppeID)) AS Antall FROM Utstyrsgrupper g ORDER BY Navn ASC");
       foreach ($rgrupper->result_array() as $rgruppe) {
         $grupper[] = $rgruppe;
         unset($rgruppe);
@@ -17,24 +17,27 @@
     }
 
     function gruppe($ID) {
-      $rgrupper = $this->db->query("SELECT ID,Navn,Beskrivelse FROM mat_grupper WHERE (ID=".$ID.") LIMIT 1");
+      $rgrupper = $this->db->query("SELECT GruppeID,Navn,Beskrivelse FROM Utstyrsgrupper WHERE (GruppeID=".$ID.") LIMIT 1");
       if ($rgruppe = $rgrupper->row_array()) {
         return $rgruppe;
       }
     }
 
-    function lagregruppe($gruppe) {
-      if ($gruppe['ID'] == 0) {
-        $this->db->query("INSERT INTO mat_grupper (DatoRegistrert) VALUES (Now())");
-        $gruppe['ID'] = $this->db->insert_id();
+    function lagregruppe($ID=null,$gruppe) {
+      $gruppe['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $gruppe['DatoRegistrert'] = $gruppe['DatoEndret'];
+        $this->db->query($this->db->insert_string('Utstyrsgrupper',$gruppe));
+        $gruppe['GruppeID'] = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Utstyrsgrupper',$gruppe,'GruppeID='.$ID));
+        $gruppe['GruppeID'] = $ID;
       }
-      $this->db->query("UPDATE mat_grupper SET Navn='".$gruppe['Navn']."' WHERE ID=".$gruppe['ID']." LIMIT 1");
-      $this->db->query("UPDATE mat_grupper SET Beskrivelse='".$gruppe['Beskrivelse']."' WHERE ID=".$gruppe['ID']." LIMIT 1");
-      $this->db->query("UPDATE mat_grupper SET DatoEndret=Now() WHERE ID=".$gruppe['ID']." LIMIT 1");
+      return $gruppe;
     }
 
     function produsenter() {
-      $rprodusenter = $this->db->query("SELECT ID,Navn,(SELECT COUNT(ID) FROM mat_utstyr WHERE (ProdusentID=p.ID)) AS Antall FROM mat_produsenter p ORDER BY Navn ASC");
+      $rprodusenter = $this->db->query("SELECT ProdusentID,Navn,(SELECT COUNT(*) FROM Utstyrsliste WHERE (ProdusentID=p.ProdusentID)) AS Antall FROM Produsenter p ORDER BY Navn ASC");
       foreach ($rprodusenter->result_array() as $rprodusent) {
         $produsenter[] = $rprodusent;
         unset($rprodusent);
@@ -45,25 +48,29 @@
     }
 
     function produsent($ID) {
-      $rprodusenter = $this->db->query("SELECT ID,Navn FROM mat_produsenter WHERE (ID=".$ID.") LIMIT 1");
+      $rprodusenter = $this->db->query("SELECT ProdusentID,Navn FROM Produsenter WHERE (ProdusentID=".$ID.") LIMIT 1");
       if ($rprodusent = $rprodusenter->row_array()) {
         return $rprodusent;
       }
     }
 
-    function lagreprodusent($produsent) {
-      if ($produsent['ID'] == 0) {
-        $this->db->query("INSERT INTO mat_produsenter (DatoRegistrert) VALUES (Now())");
-        $produsent['ID'] = $this->db->insert_id();
+    function lagreprodusent($ID=null,$produsent) {
+      $produsent['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $produsent['DatoRegistrert'] = $produsent['DatoEndret'];
+        $this->db->query($this->db->insert_string('Produsenter',$produsent));
+        $produsent['ProdusentID'] = $this->db->insert_id();
+      } else {
+        $thos->db->query($this->db->update_string('Produsenter',$produsent,'ProdusentID='.$ID));
+        $produsent['ProdusentID'] = $ID;
       }
-      $this->db->query("UPDATE mat_produsenter SET Navn='".$produsent['Navn']."' WHERE ID=".$produsent['ID']." LIMIT 1");
-      $this->db->query("UPDATE mat_produsenter SET DatoEndret=Now() WHERE ID=".$produsent['ID']." LIMIT 1");
+      return $produsent;
     }
 
     function lagerplasser() {
-      $rlagerplasser = $this->db->query("SELECT ID,Navn,Kode,(SELECT COUNT(*) FROM mat_utstyr WHERE (LagerID=l.ID)) AS Antall FROM mat_lagerplasser l ORDER BY Kode ASC");
+      $rlagerplasser = $this->db->query("SELECT LagerplassID,Navn,Kode,(SELECT COUNT(*) FROM Utstyrsliste WHERE (LagerplassID=l.LagerplassID)) AS Antall FROM Lagerplasser l ORDER BY Kode ASC");
       foreach ($rlagerplasser->result_array() as $rlagerplass) {
-        $rlagerplass['Kasser'] = $this->utstyrskasser(array('LagerID' => $rlagerplass['ID']));
+        $rlagerplass['Kasser'] = $this->utstyrskasser(array('LagerplassID' => $rlagerplass['LagerplassID']));
         $lagerplasser[] = $rlagerplass;
         unset($rlagerplass);
       }
@@ -73,25 +80,27 @@
     }
 
     function lagerplass($ID) {
-      $rlagerplasser = $this->db->query("SELECT ID,Navn,Kode,Beskrivelse FROM mat_lagerplasser WHERE (ID=".$ID.") LIMIT 1");
+      $rlagerplasser = $this->db->query("SELECT LagerplassID,Navn,Kode,Beskrivelse FROM Lagerplasser WHERE (LagerplassID=".$ID.") LIMIT 1");
       if ($lagerplass = $rlagerplasser->row_array()) {
         return $lagerplass;
       }
     }
 
-    function lagrelagerplass($lagerplass) {
-      if ($lagerplass['ID'] == 0) {
-        $this->db->query("INSERT INTO mat_lagerplasser (DatoRegistrert) VALUES (Now())");
-        $lagerplass['ID'] = $this->db->insert_id();
+    function lagrelagerplass($ID=null,$lagerplass) {
+      $lagerplass['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $lagerplass['DatoRegistrert'] = $lagerplass['DatoEndret'];
+        $this->db->query($this->db->insert_string('Lagerplasser',$lagerplass));
+        $lagerplass['LagerplassID'] = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Lagerplasser',$lagerplass,'LagerplassID='.$ID));
+        $lagerplass['LagerplassID'] = $ID;
       }
-      $this->db->query("UPDATE mat_lagerplasser SET Navn='".$lagerplass['Navn']."' WHERE ID=".$lagerplass['ID']." LIMIT 1");
-      $this->db->query("UPDATE mat_lagerplasser SET Kode='".$lagerplass['Kode']."' WHERE ID=".$lagerplass['ID']." LIMIT 1");
-      $this->db->query("UPDATE mat_lagerplasser SET Beskrivelse='".$lagerplass['Beskrivelse']."' WHERE ID=".$lagerplass['ID']." LIMIT 1");
-      $this->db->query("UPDATE mat_lagerplasser SET DatoEndret=Now() WHERE ID=".$lagerplass['ID']." LIMIT 1");
+      return $lagerplass;
     }
 
     function utstyrstyper() {
-      $rutstyrstyper = $this->db->query("SELECT ID,Navn,(SELECT COUNT(*) FROM mat_utstyr WHERE (TypeID=t.ID)) AS Antall FROM mat_utstyrstyper t ORDER BY Navn ASC");
+      $rutstyrstyper = $this->db->query("SELECT TypeID,Navn,(SELECT COUNT(*) FROM Utstyrsliste WHERE (TypeID=t.TypeID)) AS Antall FROM Utstyrstyper t ORDER BY Navn ASC");
       foreach ($rutstyrstyper->result_array() as $utstyrstype) {
         $utstyrstyper[] = $utstyrstype;
       }
@@ -101,26 +110,30 @@
     }
 
     function utstyrstype($ID) {
-      $rutstyrstype = $this->db->query("SELECT ID,Navn FROM mat_utstyrstyper WHERE (ID=".$ID.") LIMIT 1");
+      $rutstyrstype = $this->db->query("SELECT TypeID,Navn FROM Utstyrstyper WHERE (TypeID=".$ID.") LIMIT 1");
       if ($utstyrstype = $rutstyrstype->row_array()) {
         return $utstyrstype;
       }
     }
 
-    function lagreutstyrstype($utstyrstype) {
-      if ($utstyrstype['ID'] == 0) {
-        $this->db->query("INSERT INTO mat_utstyrstyper (DatoRegistrert) VALUES (Now())");
-        $utstyrstype['ID'] = $this->db->insert_id();
+    function lagreutstyrstype($ID=null,$utstyrstype) {
+      $utstyrstype['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $utstyrstype['DatoRegistrert'] = $utstyrstype['DatoEndret'];
+        $this->db->query($this->db->insert_string('Utstyrstyper',$utstyrstype));
+        $utstyrstype['TypeID'] = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Utstyrstyper',$utstyrstype,'TypeID='.$ID));
+        $utstyrstype['TypeID'] = $ID;
       }
-      $this->db->query("UPDATE mat_utstyrstyper SET Navn='".$utstyrstype['Navn']."' WHERE ID=".$utstyrstype['ID']." LIMIT 1");
-      $this->db->query("UPDATE mat_utstyrstyper SET DatoEndret=Now() WHERE ID=".$utstyrstype['ID']." LIMIT 1");
+      return $utstyrstype;
     }
 
     function utstyrsliste($filter = NULL) {
       if ($filter == NULL) {
-        $sql = "SELECT * FROM mat_utstyr WHERE (DatoSlettet Is Null) ORDER BY ID ASC";
+        $sql = "SELECT * FROM Utstyrsliste WHERE (DatoSlettet Is Null) ORDER BY UtstyrID ASC";
       } else {
-        $sql = "SELECT * FROM mat_utstyr WHERE 1";
+        $sql = "SELECT * FROM Utstyrsliste WHERE 1";
         if (isset($filter['FaggruppeID'])) {
           $sql = $sql." AND (FaggruppeID=".$filter['FaggruppeID'].")";
         }
@@ -133,77 +146,73 @@
         if (isset($filter['ProdusentID'])) {
           $sql = $sql." AND (ProdusentID=".$filter['ProdusentID'].")";
         }
-        if (isset($filter['LagerID'])) {
-          $sql = $sql." AND (LagerID=".$filter['LagerID'].")";
+        if (isset($filter['LagerplassID'])) {
+          $sql = $sql." AND (LagerplassID=".$filter['LagerplassID'].")";
         }
         if (isset($filter['KasseID'])) {
           $sql = $sql." AND (KasseID=".$filter['KasseID'].")";
         }
-        $sql = $sql." ORDER BY LENGTH(ID), ID ASC";
+        $sql = $sql." ORDER BY LENGTH(UtstyrID), UtstyrID ASC";
       }
       $resultat = $this->db->query($sql);
       foreach ($resultat->result() as $rad) {
-        $utstyr['ID'] = $rad->ID;
-        $utstyr['UID'] = str_pad($rad->ID, 4, "0", STR_PAD_LEFT);
-        $utstyr['Navn'] = str_pad($rad->ID, 4, "0", STR_PAD_LEFT);
+        $utstyr['UtstyrID'] = $rad->UtstyrID;
+        $utstyr['UID'] = str_pad($rad->UtstyrID, 4, "0", STR_PAD_LEFT);
+        $utstyr['Navn'] = str_pad($rad->UtstyrID, 4, "0", STR_PAD_LEFT);
 	$utstyr['FaggruppeID'] = $rad->FaggruppeID;
-        $grupper = $this->db->query("SELECT * FROM mat_grupper WHERE (ID=".$rad->GruppeID.") LIMIT 1");
+        $grupper = $this->db->query("SELECT * FROM Utstyrsgrupper WHERE (GruppeID=".$rad->GruppeID.") LIMIT 1");
         if ($gruppe = $grupper->row()) {
-          $utstyr['Gruppe']['ID'] = $gruppe->ID;
-          $utstyr['Gruppe']['Navn'] = $gruppe->Navn;
+          $utstyr['GruppeID'] = $gruppe->GruppeID;
+          $utstyr['GruppeNavn'] = $gruppe->Navn;
           unset($type);
         }
         unset($grupper);
-        $typer = $this->db->query("SELECT * FROM mat_utstyrstyper WHERE (ID=".$rad->TypeID.") LIMIT 1");
+        $typer = $this->db->query("SELECT * FROM Utstyrstyper WHERE (TypeID=".$rad->TypeID.") LIMIT 1");
         if ($type = $typer->row()) {
-          $utstyr['Type']['ID'] = $type->ID;
-          $utstyr['Type']['Navn'] = $type->Navn;
+          $utstyr['TypeID'] = $type->TypeID;
+          $utstyr['TypeNavn'] = $type->Navn;
           unset($type);
         }
         unset($typer);
-        $produsenter = $this->db->query("SELECT * FROM mat_produsenter WHERE (ID=".$rad->ProdusentID.") LIMIT 1");
+        $produsenter = $this->db->query("SELECT * FROM Produsenter WHERE (ProdusentID=".$rad->ProdusentID.") LIMIT 1");
         if ($produsent = $produsenter->row()) {
-          $utstyr['Produsent']['ID'] = $produsent->ID;
-          $utstyr['Produsent']['Navn'] = $produsent->Navn;
+          $utstyr['ProdusentID'] = $produsent->ProdusentID;
+          $utstyr['ProdusentNavn'] = $produsent->Navn;
           $utstyr['Navn'] = $utstyr['Navn']." ".$produsent->Navn;
           unset($produsent);
         }
         unset($produsenter);
-        if ($rad->DatoAnskaffet == "0000-00-00") {
-          $utstyr['DatoAnskaffet'] = "";
-        } else {
-	  $utstyr['DatoAnskaffet'] = date('d.m.Y',strtotime($rad->DatoAnskaffet));
-        }
+	$utstyr['DatoAnskaffet'] = $rad->DatoAnskaffet;
 	$utstyr['Modell'] = $rad->Modell;
         $utstyr['Navn'] = $utstyr['Navn']." ".$utstyr['Modell'];
-        if (isset($utstyr['Type']['Navn'])) {
-          $utstyr['Navn'] = $utstyr['Navn']." (".$utstyr['Type']['Navn'].")";
+        if (isset($utstyr['TypeNavn'])) {
+          $utstyr['Navn'] = $utstyr['Navn']." (".$utstyr['TypeNavn'].")";
         }
 	$utstyr['Serienummer'] = $rad->Serienummer;
-        $lagerplasser = $this->db->query("SELECT * FROM mat_lagerplasser WHERE (ID=".$rad->LagerID.") LIMIT 1");
+        $lagerplasser = $this->db->query("SELECT * FROM Lagerplasser WHERE (LagerplassID=".$rad->LagerplassID.") LIMIT 1");
         if ($lagerplass = $lagerplasser->row()) {
-          $utstyr['Lagerplass']['ID'] = $lagerplass->ID;
-          $utstyr['Lagerplass']['Navn'] = $lagerplass->Kode." ".$lagerplass->Navn;
+          $utstyr['LagerplassID'] = $lagerplass->LagerplassID;
+          $utstyr['LagerplassNavn'] = $lagerplass->Kode." ".$lagerplass->Navn;
           $utstyr['UID'] = $lagerplass->Kode.$utstyr['UID'];
           $utstyr['Navn'] = $lagerplass->Kode.$utstyr['Navn'];
           unset($lagerplass);
         }
         unset($lagerplasser);
-        $kasser = $this->db->query("SELECT * FROM mat_kasser WHERE (ID=".$rad->KasseID.") LIMIT 1");
+        $kasser = $this->db->query("SELECT * FROM Lagerkasser WHERE (KasseID=".$rad->KasseID.") LIMIT 1");
         if ($kasse = $kasser->row()) {
-          $utstyr['Kasse']['ID'] = $kasse->ID;
-          $utstyr['Kasse']['Navn'] = $kasse->Navn;
+          $utstyr['KasseID'] = $kasse->KasseID;
+          $utstyr['KasseNavn'] = $kasse->Navn;
           unset($kasse);
         }
         unset($kasser);
-        $tsrapporter = $this->db->query("SELECT TapSkadeRapportID FROM TapSkadeRapporter WHERE (UtstyrID=".$rad->ID.") ORDER BY DatoRegistrert DESC");
+        $tsrapporter = $this->db->query("SELECT TapSkadeRapportID FROM TapSkadeRapporter WHERE (UtstyrID=".$rad->UtstyrID.") ORDER BY DatoRegistrert DESC");
         if ($tsrapport = $tsrapporter->row()) {
           $utstyr['TSRapportID'] = $tsrapport->TapSkadeRapportID;
           unset($tsrapport);
         }
         unset($tsrapporter);
-	$utstyr['StatusID'] = $rad->Status;
-        $utstyr['Status'] = $this->ArrStatus[$rad->Status];
+	$utstyr['StatusID'] = $rad->StatusID;
+        $utstyr['Status'] = $this->ArrStatus[$rad->StatusID];
 	$utstyrsliste[] = $utstyr;
 	unset($utstyr);
       }
@@ -214,28 +223,28 @@
 
     function utstyr($ID = NULL) {
       if ($ID != NULL) {
-        $resultat = $this->db->query("SELECT * FROM mat_utstyr WHERE (ID=".$ID.") LIMIT 1");
+        $resultat = $this->db->query("SELECT * FROM Utstyrsliste WHERE (UtstyrID=".$ID.") LIMIT 1");
         if ($rad = $resultat->row()) {
-          $utstyr['ID'] = $rad->ID;
-          $utstyr['UID'] = str_pad($rad->ID, 4, "0", STR_PAD_LEFT);
-          $utstyr['Navn'] = str_pad($rad->ID, 4, "0", STR_PAD_LEFT);
+          $utstyr['UtstyrID'] = $rad->UtstyrID;
+          $utstyr['UID'] = str_pad($rad->UtstyrID, 4, "0", STR_PAD_LEFT);
+          $utstyr['Navn'] = str_pad($rad->UtstyrID, 4, "0", STR_PAD_LEFT);
           $utstyr['FaggruppeID'] = $rad->FaggruppeID;
           $utstyr['GruppeID'] = $rad->GruppeID;
-          $grupper = $this->db->query("SELECT * FROM mat_grupper WHERE (ID=".$rad->GruppeID.") LIMIT 1");
+          $grupper = $this->db->query("SELECT * FROM Utstyrsgrupper WHERE (GruppeID=".$rad->GruppeID.") LIMIT 1");
           if ($gruppe = $grupper->row()) {
             $utstyr['GruppeNavn'] = $gruppe->Navn;
             unset($gruppe);
           }
           unset($grupper);
           $utstyr['TypeID'] = $rad->TypeID;
-          $typer = $this->db->query("SELECT * FROM mat_utstyrstyper WHERE (ID=".$rad->TypeID.") LIMIT 1");
+          $typer = $this->db->query("SELECT * FROM Utstyrstyper WHERE (TypeID=".$rad->TypeID.") LIMIT 1");
           if ($type = $typer->row()) {
             $utstyr['TypeNavn'] = $type->Navn;
             unset($type);
           }
           unset($typer);
           $utstyr['ProdusentID'] = $rad->ProdusentID;
-          $produsenter = $this->db->query("SELECT * FROM mat_produsenter WHERE (ID=".$rad->ProdusentID.") LIMIT 1");
+          $produsenter = $this->db->query("SELECT * FROM Produsenter WHERE (ProdusentID=".$rad->ProdusentID.") LIMIT 1");
           if ($produsent = $produsenter->row()) {
             $utstyr['ProdusentNavn'] = $produsent->Navn;
             $utstyr['Navn'] = $utstyr['Navn']." ".$produsent->Navn;
@@ -243,18 +252,14 @@
           }
           $utstyr['ProdusentID'] = $rad->ProdusentID;
           $utstyr['LeverandorID'] = $rad->LeverandorID;
-          if ($rad->DatoAnskaffet == "0000-00-00") {
-            $utstyr['DatoAnskaffet'] = "";
-          } else {
-            $utstyr['DatoAnskaffet'] = date('d.m.Y',strtotime($rad->DatoAnskaffet));
-          }
+          $utstyr['DatoAnskaffet'] = $rad->DatoAnskaffet;
           $utstyr['Modell'] = $rad->Modell;
           $utstyr['Navn'] = $utstyr['Navn']." ".$rad->Modell;
           $utstyr['Serienummer'] = $rad->Serienummer;
           $utstyr['Notater'] = $rad->Notater;
           $utstyr['Kostnad'] = $rad->Kostnad;
-          $utstyr['LagerID'] = $rad->LagerID;
-          $lagerplasser = $this->db->query("SELECT * FROM mat_lagerplasser WHERE (ID=".$rad->LagerID.") LIMIT 1");
+          $utstyr['LagerplassID'] = $rad->LagerplassID;
+          $lagerplasser = $this->db->query("SELECT * FROM Lagerplasser WHERE (LagerplassID=".$rad->LagerplassID.") LIMIT 1");
           if ($lagerplass = $lagerplasser->row()) {
             $utstyr['LagerplassNavn'] = $lagerplass->Kode." ".$lagerplass->Navn;
             $utstyr['UID'] = $lagerplass->Kode.$utstyr['UID'];
@@ -262,15 +267,15 @@
             unset($lagerplass);
           }
           unset($lagerplasser);
-          $kasser = $this->db->query("SELECT * FROM mat_kasser WHERE (ID=".$rad->KasseID.") LIMIT 1");
+          $kasser = $this->db->query("SELECT * FROM Lagerkasser WHERE (KasseID=".$rad->KasseID.") LIMIT 1");
           if ($kasse = $kasser->row()) {
             $utstyr['KasseNavn'] = $kasse->Navn;
             unset($kasse);
           }
           unset($kasser);
-          $utstyr['Lagerplass'] = $rad->LagerID.".".$rad->KasseID;
-          $utstyr['StatusID'] = $rad->Status;
-          $utstyr['Status'] = $this->ArrStatus[$rad->Status];
+          $utstyr['Lagerplass'] = $rad->LagerplassID.".".$rad->KasseID;
+          $utstyr['StatusID'] = $rad->StatusID;
+          $utstyr['Status'] = $this->ArrStatus[$rad->StatusID];
         }
         return $utstyr;
       }
@@ -303,13 +308,13 @@
 
     function utstyrskasser($filter = NULL) {
       if ($filter == NULL) {
-        $sql = "SELECT ID,Navn,LagerID,(SELECT COUNT(*) FROM mat_utstyr WHERE (KasseID=k.ID)) AS Antall FROM mat_kasser k ORDER BY ID";
+        $sql = "SELECT KasseID,Navn,LagerplassID,(SELECT COUNT(*) FROM Utstyrsliste WHERE (KasseID=k.KasseID)) AS Antall FROM Lagerkasser k ORDER BY ID";
       } else {
-        $sql = "SELECT ID,Navn,LagerID,(SELECT COUNT(*) FROM mat_utstyr WHERE (KasseID=k.ID)) AS Antall FROM mat_kasser k WHERE 1";
-        if (isset($filter['LagerID'])) {
-          $sql = $sql." AND (LagerID=".$filter['LagerID'].")";
+        $sql = "SELECT KasseID,Navn,LagerplassID,(SELECT COUNT(*) FROM Utstyrsliste WHERE (KasseID=k.KasseID)) AS Antall FROM Lagerkasser k WHERE 1";
+        if (isset($filter['LagerplassID'])) {
+          $sql = $sql." AND (LagerplassID=".$filter['LagerplassID'].")";
         }
-        $sql = $sql." ORDER BY ID";
+        $sql = $sql." ORDER BY KasseID";
       }
       $rkasser = $this->db->query($sql);
       foreach ($rkasser->result_array() as $kasse) {
@@ -348,13 +353,13 @@
       if ($rapport['UtstyrID'] > 0) {
         switch ($rapport['Skadetype']) {
           case 0:
-            $this->db->query("UPDATE mat_utstyr SET Status=2 WHERE ID=".$rapport['UtstyrID']." LIMIT 1");
+            $this->db->query("UPDATE Utstyrsliste SET Status=2 WHERE ID=".$rapport['UtstyrID']." LIMIT 1");
             break;
           case 2:
-            $this->db->query("UPDATE mat_utstyr SET Status=4 WHERE ID=".$rapport['UtstyrID']." LIMIT 1");
+            $this->db->query("UPDATE Utstyrsliste SET Status=4 WHERE ID=".$rapport['UtstyrID']." LIMIT 1");
             break;
           case 3:
-            $this->db->query("UPDATE mat_utstyr SET Status=5 WHERE ID=".$rapport['UtstyrID']." LIMIT 1");
+            $this->db->query("UPDATE Utstyrsliste SET Status=5 WHERE ID=".$rapport['UtstyrID']." LIMIT 1");
             break;
         }
       }
@@ -367,7 +372,7 @@
     }
 
     function tsrapporter() {
-      $rrapporter = $this->db->query("SELECT TapSkadeRapportID,DatoRegistrert,PersonRapportertID,(SELECT Fornavn FROM kon_personer WHERE (ID=ts.PersonRapportertID) LIMIT 1) AS PersonRapportertNavn,UtstyrID,Skadetype,StatusID FROM TapSkadeRapporter ts ORDER BY DatoRegistrert ASC");
+      $rrapporter = $this->db->query("SELECT TapSkadeRapportID,DatoRegistrert,PersonRapportertID,(SELECT Fornavn FROM Personer WHERE (PersonID=ts.PersonRapportertID) LIMIT 1) AS PersonRapportertNavn,UtstyrID,Skadetype,StatusID FROM TapSkadeRapporter ts ORDER BY DatoRegistrert ASC");
       foreach ($rrapporter->result_array() as $rapport) {
         if ($rapport['UtstyrID'] > 0) {
           $utstyr = $this->utstyr($rapport['UtstyrID']);
@@ -384,7 +389,7 @@
     }
 
     function vedlikeholdslogger($ID) {
-      $rlogger = $this->db->query("SELECT ID,UtstyrID,DatoRegistrert,PersonID,(SELECT CONCAT(Fornavn,' ',Etternavn) AS Navn FROM kon_personer WHERE (ID=v.PersonID)) AS PersonNavn,Notat,NyStatusID FROM mat_vedlikehold v WHERE (UtstyrID=".$ID.") ORDER BY DatoRegistrert ASC");
+      $rlogger = $this->db->query("SELECT VedlikeholdID,UtstyrID,DatoRegistrert,PersonID,(SELECT Fornavn FROM Personer WHERE (PersonID=v.PersonID)) AS PersonNavn,Notat,NyStatusID FROM Vedlikehold v WHERE (UtstyrID=".$ID.") ORDER BY DatoRegistrert ASC");
       foreach ($rlogger->result_array() as $logg) {
         $logg['NyStatus'] = $this->ArrStatus[$logg['NyStatusID']];
         $logger[] = $logg;
@@ -396,15 +401,15 @@
 
     function lagrevedlikehold($data) {
       $logg = array('UtstyrID' => $data['UtstyrID'], 'DatoRegistrert' => date('Y-m-d H:i:s'), 'DatoEndret' => date('Y-m-d H:i:s'), 'PersonID' => $data['PersonID'], 'Notat' => $data['Vedlikehold'], 'NyStatusID' => $data['StatusID']);
-      $this->db->query($this->db->insert_string('mat_vedlikehold',$logg));
+      $this->db->query($this->db->insert_string('Vedlikehold',$logg));
       if ($data['StatusID'] > 0) {
-        $utstyr = array('Status' => $data['StatusID'], 'DatoEndret' => date('Y-m-d H:i:s'));
-        $this->db->query($this->db->update_string('mat_utstyr',$utstyr,'ID='.$data['UtstyrID']));
+        $utstyr = array('StatusID' => $data['StatusID'], 'DatoEndret' => date('Y-m-d H:i:s'));
+        $this->db->query($this->db->update_string('Utstyrsliste',$utstyr,'UtstyrID='.$data['UtstyrID']));
       }
       if ($data['StatusID'] = 1) {
-        $this->db->query($this->db->update_string('mat_tsrapporter',array('Status' => '3'),'UtstyrID='.$data['UtstyrID']));
+        $this->db->query($this->db->update_string('TapSkadeRapporter',array('StatusID' => '3'),'UtstyrID='.$data['UtstyrID']));
       } elseif ($data['StatusID'] > 1) {
-        $this->db->query($this->db->update_string('mat_tsrapporter',array('Status' => '2'),'UtstyrID='.$data['UtstyrID']));
+        $this->db->query($this->db->update_string('TapSkadeRapporter',array('StatusID' => '2'),'UtstyrID='.$data['UtstyrID']));
       }
     }
 

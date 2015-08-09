@@ -1,8 +1,10 @@
+<h3 class="sub-header">Prosjektdetaljer</h3>
+
 <?php echo form_open('prosjekter/prosjekt/'.$Prosjekt['ProsjektID']); ?>
 <input type="hidden" name="ProsjektID" id="ProsjektID" value="<?php echo set_value('ProsjektID',$Prosjekt['ProsjektID']); ?>" />
 
 <div class="panel panel-default">
-  <div class="panel-heading"><h4>Prosjekt</h4></div>
+  <div class="panel-heading">&nbsp;</div>
 
   <div class="panel-body">
 
@@ -45,8 +47,8 @@
 
     <div class="form-group">
       <label for="DatoProsjektstart">Prosjektperiode:</label>
-      <input type="date" class="form-control" name="DatoProsjektstart" id="DatoProsjektstart" value="<?php echo date("d.m.Y",strtotime(set_value('DatoProsjektstart',$Prosjekt['DatoProsjektstart']))); ?>" />
-      <input type="date" class="form-control" name="DatoProsjektslutt" id="DatoProsjektslutt" value="<?php echo date("d.m.Y",strtotime(set_value('DatoProsjektslutt',$Prosjekt['DatoProsjektslutt']))); ?>" />
+      <input type="date" class="form-control" name="DatoProsjektstart" id="DatoProsjektstart" value="<?php echo set_value('DatoProsjektstart',($Prosjekt['DatoProsjektstart'] == '' ? '' : ($Prosjekt['DatoProsjektstart'] != '0000-00-00' ? date('d.m.Y',strtotime($Prosjekt['DatoProsjektstart'])) : ''))); ?>" />
+      <input type="date" class="form-control" name="DatoProsjektslutt" id="DatoProsjektslutt" value="<?php echo set_value('DatoProsjektslutt',($Prosjekt['DatoProsjektslutt'] == '' ? '' : ($Prosjekt['DatoProsjektslutt'] != '0000-00-00' ? date('d.m.Y',strtotime($Prosjekt['DatoProsjektslutt'])) : ''))); ?>" />
     </div>
 
     <div class="form-group">
@@ -119,35 +121,37 @@
   <div class="panel-heading">
     <h3 class="panel-title">Innkjøpsordrer</h3>
   </div>
-  <div class="table-responsive">
-    <table class="table table-striped table-hover table-condensed">
-      <thead>
-        <tr>
-          <th>Dato</th>
-          <th>Referanse</th>
-          <th>Ansvarlig</th>
-          <th>Ordresum</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
+  <div class="panel-body">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>Dato</th>
+            <th>Referanse</th>
+            <th>Ansvarlig</th>
+            <th>Ordresum</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
 <?php foreach ($Innkjopsordrer as $Ordre) { ?>
 <?php $TotalOrdresum = $TotalOrdresum + $Ordre['OrdreSum']; ?>
-        <tr>
-          <td><?php echo date('d.m.Y',strtotime($Ordre['DatoRegistrert'])); ?></td>
-          <td><?php echo $Ordre['Referanse']; ?></td>
-          <td><?php echo $Ordre['PersonAnsvarligNavn']; ?></td>
-          <td><?php echo 'kr '.number_format($Ordre['OrdreSum'],2,',','.'); ?></td>
-          <td><?php echo $Ordre['Status']; ?></td>
-        </tr>
+          <tr>
+            <td><?php echo date('d.m.Y',strtotime($Ordre['DatoRegistrert'])); ?></td>
+            <td><?php echo $Ordre['Referanse']; ?></td>
+            <td><?php echo $Ordre['PersonAnsvarligNavn']; ?></td>
+            <td><?php echo 'kr '.number_format($Ordre['OrdreSum'],2,',','.'); ?></td>
+            <td><?php echo $Ordre['Status']; ?></td>
+          </tr>
 <?php } ?>
-        <tr>
-          <td colspan="3">&nbsp;</td>
-          <td><?php echo 'kr '.number_format($TotalOrdresum,2,',','.'); ?></td>
-          <td>&nbsp;</td>
-        </tr>
-      </tbody>
-    </table>
+          <tr>
+            <td colspan="3">&nbsp;</td>
+            <td><?php echo 'kr '.number_format($TotalOrdresum,2,',','.'); ?></td>
+            <td>&nbsp;</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <?php } ?>
@@ -201,7 +205,7 @@
     foreach ($Prosjekt['Kommentarer'] as $Kommentar) {
 ?>
     <div class="panel panel-default panel-info">
-      <div class="panel-heading"><?php echo date('d.m.Y H:i',strtotime($Kommentar['DatoRegistrert'])).", av ".$Notat['PersonNavn']; ?></div>
+      <div class="panel-heading"><?php echo date('d.m.Y H:i',strtotime($Kommentar['DatoRegistrert'])).", av ".$Kommentar['PersonNavn']; ?></div>
       <div class="panel-body"><?php echo nl2br($Kommentar['Kommentar']); ?></div>
     </div>
 <?php

@@ -1,8 +1,9 @@
-<?php echo form_open('/raadet/sak/'); ?>
+<h3 class="sub-header">Saksdetaljer</h3>
+
+<?php echo form_open('/raadet/sak/'.$Sak['SakID']); ?>
 <input type="hidden" name="SakID" value="<?php echo set_value('SakID',$Sak['SakID']); ?>" />
 <div class="panel panel-default">
-  <div class="panel-heading"><h4>Saksdetaljer</h4></div>
-
+  <div class="panel-heading">&nbsp;</div>
   <div class="panel-body">
 
     <div class="form-group">
@@ -42,7 +43,7 @@
     </div>
 
     <div class="form-group">
-      <input type="submit" class="btn btn-primary" value="Lagre" <?php if (!in_array('801',$UABruker['UAP'])) { echo "disabled "; } ?>/>
+      <input type="submit" class="btn btn-primary" name="SakLagre" value="Lagre" <?php if (!in_array('801',$UABruker['UAP'])) { echo "disabled "; } ?>/>
 <?php if ($Sak['SaksNummer'] == 0) { ?>
       <input type="button" class="btn btn-success" value="Godkjenn" onclick="javascript:document.location.href='<?php echo site_url(); ?>/raadet/lagsaksnummer/?sid=<?php echo $Sak['SakID']; ?>';" <?php if (!in_array('803',$UABruker['UAP'])) { echo "disabled "; } ?>/>
 <?php } ?>

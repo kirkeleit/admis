@@ -1,4 +1,5 @@
 <h3 class="sub-header">Medlemsgrupper</h3>
+
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>

@@ -2,7 +2,7 @@
   class Admis_model extends CI_Model {
 
     function roller() {
-      $rroller = $this->db->query("SELECT ID,Navn,UAP FROM brukerroller ORDER BY Indeks ASC");
+      $rroller = $this->db->query("SELECT RolleID,Navn,UAP FROM BrukerRoller ORDER BY Indeks ASC");
       foreach ($rroller->result_array() as $rolle) {
         $roller[] = $rolle;
         unset($rolle);
@@ -12,7 +12,7 @@
 
     function lagreroller($data) {
       foreach ($data as $ID => $Rolle) {
-        $this->db->query("UPDATE brukerroller SET UAP='".serialize($Rolle)."',DatoEndret=Now() WHERE ID=".$ID." LIMIT 1");
+        $this->db->query("UPDATE BrukerRoller SET UAP='".serialize($Rolle)."',DatoEndret=Now() WHERE RolleID=".$ID." LIMIT 1");
       }
     }
 

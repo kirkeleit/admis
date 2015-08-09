@@ -27,7 +27,8 @@ class Prosjekter extends CI_Controller {
   public function nyttprosjekt() {
     $data['Prosjekt'] = null;
     $this->load->model('Kontakter_model');
-    $data['Faggrupper'] = $this->Kontakter_model->faggrupper();
+    $this->load->model('Kompetanse_model');
+    $data['Faggrupper'] = $this->Kompetanse_model->faggrupper();
     $data['Medlemmer'] = $this->Kontakter_model->medlemmer();
     $this->template->load('standard','prosjekter/prosjekt',$data);
   }
@@ -35,13 +36,14 @@ class Prosjekter extends CI_Controller {
   public function prosjekt() {
     $this->load->model('Prosjekter_model');
     $this->load->model('Kontakter_model');
+    $this->load->model('Kompetanse_model');
     $this->load->model('Okonomi_model');
     if ($this->input->post('ProsjektLagre')) {
       $prosjekt['ProsjektAr'] = $this->input->post('ProsjektAr');
       $prosjekt['FaggruppeID'] = $this->input->post('FaggruppeID');
       $prosjekt['PersonProsjektlederID'] = $this->input->post('PersonProsjektlederID');
-      $prosjekt['DatoProsjektstart'] = date("Y-m-d",strtotime($this->input->post('DatoProsjektstart')));
-      $prosjekt['DatoProsjektslutt'] = date("Y-m-d",strtotime($this->input->post('DatoProsjektslutt')));
+      if ($this->input->post('DatoProsjektstart')) { $prosjekt['DatoProsjektstart'] = date("Y-m-d",strtotime($this->input->post('DatoProsjektstart'))); }
+      if ($this->input->post('DatoProsjektslutt')) { $prosjekt['DatoProsjektslutt'] = date("Y-m-d",strtotime($this->input->post('DatoProsjektslutt'))); }
       $prosjekt['Prosjektnavn'] = $this->input->post('Prosjektnavn');
       $prosjekt['Formaal'] = $this->input->post('Formaal');
       $prosjekt['Prosjektmaal'] = $this->input->post('Prosjektmaal');
@@ -61,7 +63,7 @@ class Prosjekter extends CI_Controller {
       $this->Prosjekter_model->lagrekommentar($kommentar);
       redirect('prosjekter/prosjekt/'.$kommentar['ProsjektID']);
     } else {
-      $data['Faggrupper'] = $this->Kontakter_model->faggrupper();
+      $data['Faggrupper'] = $this->Kompetanse_model->faggrupper();
       $data['Medlemmer'] = $this->Kontakter_model->medlemmer();
       $data['Prosjekt'] = $this->Prosjekter_model->prosjekt($this->uri->segment(3));
       $data['Innkjopsordrer'] = $this->Okonomi_model->innkjopsordrer(array('ProsjektID' => $this->uri->segment(3)));

@@ -29,7 +29,7 @@
       $rprosjekter = $this->db->query("SELECT ProsjektID,ProsjektAr,FaggruppeID,PersonProsjektlederID,DatoProsjektstart,DatoProsjektslutt,Prosjektnavn,Formaal,Prosjektmaal,Maalgruppe,Prosjektbeskrivelse,Arbeidstimer,Budsjettramme,StatusID FROM Prosjekter WHERE (ProsjektID=".$ID.") LIMIT 1");
       if ($prosjekt = $rprosjekter->row_array()) {
         $prosjekt['Status'] = $this->ProsjektStatus[$prosjekt['StatusID']];
-        //$prosjekt['Kommentarer'] = $this->kommentarer($prosjekt['ProsjektID']);
+        $prosjekt['Kommentarer'] = $this->kommentarer($prosjekt['ProsjektID']);
         return $prosjekt;
       }
     }
@@ -53,18 +53,18 @@
       $this->db->query("DELETE FROM ProsjektKommentarer WHERE ProsjektID=".$ID);
     }
 
-    /*function kommentarer($ID) {
-      $rkommentarer = $this->db->query("SELECT KommentarID,ProsjektID,DatoRegistrert,PersonID,(SELECT Fornavn FROM kon_personer WHERE (Personer.PersonID=pk.PersonID) LIMIT 1) AS PersonNavn,Kommentar FROM ProsjektKommentarer pk WHERE (ProsjektID=".$ID.") ORDER BY DatoRegistrert ASC");
+    function kommentarer($ID) {
+      $rkommentarer = $this->db->query("SELECT KommentarID,ProsjektID,DatoRegistrert,PersonID,(SELECT Fornavn FROM Personer WHERE (Personer.PersonID=pk.PersonID) LIMIT 1) AS PersonNavn,Kommentar FROM ProsjektKommentarer pk WHERE (ProsjektID=".$ID.") ORDER BY DatoRegistrert ASC");
       foreach ($rkommentarer->result_array() as $kommentar) {
         $kommentarer[] = $kommentar;
         unset($kommentar);
       }
       return $kommentarer;
-    }*/
+    }
 
-    /*function lagrekommentar($kommentar) {
+    function lagrekommentar($kommentar) {
       $this->db->query("INSERT INTO ProsjektKommentarer (ProsjektID,DatoRegistrert,PersonID,Kommentar) VALUES (".$kommentar['ProsjektID'].",Now(),'".$kommentar['PersonID']."','".$kommentar['Kommentar']."')");
-    }*/
+    }
 
     /*function settprosjektstatus($data) {
       $this->db->query("UPDATE pro_prosjekter SET Status='".$data['Status']."' WHERE ID=".$data['ID']." LIMIT 1");

@@ -21,14 +21,7 @@ class Oppgaver extends CI_Controller {
 
   public function nyoppgave() {
     $this->load->model('Kontakter_model');
-    $oppgave['OppgaveID'] = 0;
-    $oppgave['DatoFrist'] = "0000-00-00";
-    $oppgave['PrioritetID'] = 1;
-    $oppgave['Tittel'] = "";
-    $oppgave['Beskrivelse'] = "";
-    $oppgave['PersonAnsvarligID'] = 0;
-    $oppgave['StatusID'] = 0;
-    $data['Oppgave'] = $oppgave;
+    $data['Oppgave'] = null;
     $data['Personer'] = $this->Kontakter_model->medlemmer();
     $this->template->load('standard','oppgaver/oppgave',$data);
   }

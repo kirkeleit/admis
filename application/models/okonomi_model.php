@@ -1,9 +1,9 @@
 <?php
   class Okonomi_model extends CI_Model {
 
-    var $InnkjopsordreStatus = array(0 =>'Registrert',1=>'Under planlegging',2=>'Til godkjenning',3=>'Godkjent',4=>'Bestilt',5=>'Levert',6=>'Fullført');
+    var $InnkjopsordreStatus = array(0 =>'Registrert',1=>'Under arbeid',2=>'Til godkjenning',3=>'Godkjent',4=>'Bestilt',5=>'Levert',6=>'Fullført');
     var $InnkjopslinjeStatus = array(0 => 'Ikke bestilt', 1 => 'Bestilt', 2 => 'Levert');
-    var $FakturaStatus = array(0 => 'Under arbeid', 1 => 'Til fakturering', 3 => 'Fakturert');
+    var $FakturaStatus = array(0 => 'Under arbeid', 1 => 'Til fakturering', 2 => 'Fakturert');
 
     function okonomioversikt() {
       for ($i=1; $i<=12; $i++) {
@@ -55,16 +55,6 @@
       }
     }
 
-    /*function innkjopsordrelinjercrc($ID) {
-      $rlinjer = $this->db->query("SELECT ID,InnkjopsordreID,Varenummer,Varenavn,Pris,Antall FROM oko_innkjopsordrelinjer WHERE (InnkjopsordreID=".$ID.")");
-      foreach ($rlinjer->result_array() as $linje) {
-        $linjer[] = $linje;
-      }
-      if (isset($linjer)) {
-        return md5(serialize($linjer));
-      }
-    }*/
-
     function lagreinnkjopsordre($ID,$ordre) {
       $ordre['DatoEndret'] = date("Y-m-d H:i:s");
       if ($ID == 0) {
@@ -73,46 +63,34 @@
         $ID = $this->db->insert_id();
       } else {
         $this->db->query($this->db->update_string('Innkjopsordrer',$ordre,'OrdreID='.$ID));
+        if ($ordre['StatusID'] == 4) {
+          $this->db->query("UPDATE InnkjopsordreLinjer SET StatusID=1 WHERE OrdreID=".$ID);
+        }
       }
       $ordre['OrdreID'] = $ID;
       return $ordre;
     }
 
-    function lagreinnkjopsordrelinje($ID,$linje) {
-      if ($ID == 0) {
+    function lagreinnkjopsordrelinje($ID=null,$linje) {
+      $linje['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID==null) {
+        $linje['DatoRegistrert'] = $linje['DatoEndret'];
         $this->db->query($this->db->insert_string('InnkjopsordreLinjer',$linje));
+        $linje['LinjeID'] = $this->db->insert_id();
       } else {
-        $this->db->query($this->db->update_string('InnkjopsordreLinjer',$linje,'LinjeID='.$ID));
+        if ($linje['Antall'] == 0) {
+          $this->db->query("DELETE FROM InnkjopsordreLinjer WHERE LinjeID=".$ID." LIMIT 1");
+        } else {
+          $this->db->query($this->db->update_string('InnkjopsordreLinjer',$linje,'LinjeID='.$ID));
+        }
+        $linje['LinjeID'] = $ID;
       }
+      return $linje;
     }
 
     function slettinnkjopsordre($ID) {
       $this->db->query("DELETE FROM Innkjopsordrer WHERE OrdreID=".$ID." LIMIT 1");
       $this->db->query("DELETE FROM InnkjopsordreLinjer WHERE OrdreID=".$ID." LIMIT 1");
-    }
-
-    function slettinnkjopsordrelinje($ID) {
-      $this->db->query("DELETE FROM InnkjopsordreLinjer WHERE LinjeID=".$ID." LIMIT 1");
-    }
-
-    function settinnkjopsordrestatus($data) {
-      $this->db->query("UPDATE Innkjopsordrer SET StatusID='".$data['Status']."' WHERE OrdreID=".$data['ID']." LIMIT 1");
-      $this->db->query("UPDATE Innkjopsordrer SET DatoEndret=Now() WHERE OrdreID=".$data['ID']." LIMIT 1");
-      switch ($data['Status']) {
-        case 1:
-          $ordre = $this->innkjopsordre($data['ID']);
-          $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,AdresseMottaker,Emne,Meldingstekst) VALUES (Now(),'thorbjorn@kirkeleit.net','[admis] Innkjøpsordre avvist: ".$ordre['Referanse']."','')");
-        case 2:
-          $ordre = $this->innkjopsordre($data['ID']);
-          $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,AdresseMottaker,Emne,Meldingstekst) VALUES (Now(),'thorbjorn@kirkeleit.net','[admis] Innkjøpsordre til godkjenning: ".$ordre['Referanse']."','')");
-        case 3:
-          $ordre = $this->innkjopsordre($data['ID']);
-          $this->db->query("INSERT INTO VarslingEposter (DatoRegistrert,AdresseMottaker,Emne,Meldingstekst) VALUES (Now(),'thorbjorn@kirkeleit.net','[admis] Innkjøpsordre godkjent: ".$ordre['Referanse']."','')");
-        case 4:
-          $this->db->query("UPDATE InnkjopsordreLinjer SET StatusID=1 WHERE OrdreID=".$data['ID']);
-          break;
-      }
-      return TRUE;
     }
 
     function innkjopsordrelinjer($filter) {
@@ -282,42 +260,8 @@
     }
 
     function inntekter() {
-      $resultat = $this->db->query("SELECT * FROM Inntekter WHERE (Year(DatoBokfort) = Year(Now())) ORDER BY DatoBokfort ASC");
-      foreach ($resultat->result() as $rad) {
-        $inntekt['InntektID'] = $rad->InntektID;
-        $inntekt['DatoRegistrert'] = date('d.m.Y H:i',strtotime($rad->DatoRegistrert));
-        $inntekt['DatoEndret'] = date('d.m.Y H:i',strtotime($rad->DatoRegistrert));
-        $inntekt['DatoBokfort'] = date('d.m.Y',strtotime($rad->DatoBokfort));
-        $inntekt['PersonID'] = $rad->PersonID;
-        $personer = $this->db->query("SELECT * FROM Medlemmer,Personer WHERE (Personer.PersonID=Medlemmer.PersonID) AND (Personer.PersonID=".$rad->PersonID.") LIMIT 1");
-        if ($person = $personer->row()) {
-          $inntekt['PersonInitialer'] = $person->Initialer;
-          $inntekt['Person'] = $person->Fornavn." ".$person->Etternavn;
-        } else {
-          $inntekt['PersonInitialer'] = "&nbsp;";
-          $inntekt['Person'] = "&nbsp;";
-        }
-        unset($personer);
-        $inntekt['AktivitetID'] = $rad->AktivitetID;
-        $aktiviteter = $this->db->query("SELECT * FROM RegnskapsAktiviteter WHERE (AktivitetID='".$rad->AktivitetID."')");
-        if ($aktivitet = $aktiviteter->row()) {
-          $inntekt['Aktivitet'] = $aktivitet->Navn;
-          unset($aktivitet);
-        } else {
-          $inntekt['Aktivitet'] = "n/a";
-        }
-        unset($aktiviteter);
-        $inntekt['KontoID'] = $rad->KontoID;
-        $kontoer = $this->db->query("SELECT * FROM RegnskapsKontoer WHERE (KontoID='".$rad->KontoID."')");
-        if ($konto = $kontoer->row()) {
-          $inntekt['Konto'] = $konto->Navn;
-          unset($konto);
-        } else {
-          $inntekt['Konto'] = "n/a";
-        }
-        unset($kontoer);
-        $inntekt['Beskrivelse'] = $rad->Beskrivelse;
-        $inntekt['Belop'] = $rad->Belop;
+      $rinntekter = $this->db->query("SELECT InntektID,DatoBokfort,PersonID,(SELECT Fornavn FROM Personer WHERE (PersonID=i.PersonID) LIMIT 1) AS PersonNavn,(SELECT Initialer FROM Personer WHERE (PersonID=i.PersonID) LIMIT 1) AS PersonInitialer,AktivitetID,(SELECT Navn FROM RegnskapsAktiviteter WHERE (AktivitetID=i.AktivitetID) LIMIT 1) AS AktivitetNavn,KontoID,(SELECT Navn FROM RegnskapsKontoer WHERE (KontoID=i.KontoID) LIMIT 1) AS KontoNavn,Beskrivelse,Belop FROM Inntekter i WHERE (Year(DatoBokfort) = Year(Now())) ORDER BY DatoBokfort ASC");
+      foreach ($rinntekter->result_array() as $inntekt) {
         $inntekter[] = $inntekt;
         unset($inntekt);
       }
@@ -333,19 +277,17 @@
       }
     }
 
-    function lagreinntekt($inntekt) {
-      if ($inntekt['InntektID'] == 0) {
-        $this->db->query("INSERT INTO Inntekter (DatoRegistrert) VALUES (Now())");
+    function lagreinntekt($ID = null,$inntekt) {
+      $inntekt['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $inntekt['DatoRegistrert'] = $inntekt['DatoEndret'];
+        $this->db->query($this->db->insert_string('Inntekter',$inntekt));
         $inntekt['InntektID'] = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Inntekter',$inntekt,'InntektID='.$ID));
+        $inntekt['InntektID'] = $ID;
       }
-      $this->db->query("UPDATE Inntekter SET PersonID=".$inntekt['PersonID']." WHERE InntektID=".$inntekt['InntektID']." LIMIT 1");
-      $this->db->query("UPDATE Inntekter SET AktivitetID='".$inntekt['AktivitetID']."' WHERE InntektID=".$inntekt['InntektID']." LIMIT 1");
-      $this->db->query("UPDATE Inntekter SET KontoID='".$inntekt['KontoID']."' WHERE InntektID=".$inntekt['InntektID']." LIMIT 1");
-      $this->db->query("UPDATE Inntekter SET ProsjektID='".$inntekt['ProsjektID']."' WHERE InntektID=".$inntekt['InntektID']." LIMIT 1");
-      $this->db->query("UPDATE Inntekter SET DatoBokfort='".date('Y-m-d',strtotime($inntekt['DatoBokfort']))."' WHERE InntektID=".$inntekt['InntektID']." LIMIT 1");
-      $this->db->query("UPDATE Inntekter SET Beskrivelse='".$inntekt['Beskrivelse']."' WHERE InntektID=".$inntekt['InntektID']." LIMIT 1");
-      $this->db->query("UPDATE Inntekter SET Belop='".$inntekt['Belop']."' WHERE InntektID=".$inntekt['InntektID']." LIMIT 1");
-      $this->db->query("UPDATE Inntekter SET DatoEndret=Now() WHERE InntektID=".$inntekt['InntektID']." LIMIT 1");
+      return $inntekt;
     }
 
     function slettinntekt($ID) {
@@ -487,7 +429,7 @@
         } elseif (($utlegg['DatoSignert'] != "0000-00-00 00:00:00") and ($utlegg['DatoGodkjent'] != "0000-00-00 00:00:00") and ($utlegg['DatoUtbetalt'] != "0000-00-00 00:00:00")) {
           $utlegg['StatusID'] = 3;
         }
-        $filer = $this->db->query("SELECT FilID,Filnavn FROM FilXUtlegg,Filer WHERE (Filer.FilID=FilXUtlegg.FilID) AND (FilXUtlegg.UtleggID=".$utlegg['UtleggID'].")");
+        $filer = $this->db->query("SELECT Filer.FilID,Filnavn FROM FilXUtlegg,Filer WHERE (Filer.FilID=FilXUtlegg.FilID) AND (FilXUtlegg.UtleggID=".$utlegg['UtleggID'].")");
         foreach ($filer->result() as $fil) {
           $utlegg['Filer'][$fil->FilID] = $fil->Filnavn;
         }
@@ -495,20 +437,17 @@
       }
     }
 
-    function lagreutleggskvittering($utlegg) {
-      if ($utlegg['UtleggID'] == 0) {
-        $this->db->query("INSERT INTO Utleggskvitteringer (DatoRegistrert) VALUES (Now())");
+    function lagreutleggskvittering($ID=null,$utlegg) {
+      $utlegg['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $utlegg['DatoRegistrert'] = $utlegg['DatoEndret'];
+        $this->db->query($this->db->insert_string('Utleggskvitteringer',$utlegg));
         $utlegg['UtleggID'] = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Utleggskvitteringer',$utlegg,'UtleggID='.$ID));
+        $utlegg['UtleggID'] = $ID;
       }
-      $this->db->query("UPDATE Utleggskvitteringer SET PersonID=".$utlegg['PersonID']." WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
-      $this->db->query("UPDATE Utleggskvitteringer SET AktivitetID='".$utlegg['AktivitetID']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
-      $this->db->query("UPDATE Utleggskvitteringer SET ProsjektID='".$utlegg['ProsjektID']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
-      $this->db->query("UPDATE Utleggskvitteringer SET DatoUtlegg='".$utlegg['DatoUtlegg']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
-      $this->db->query("UPDATE Utleggskvitteringer SET Kontonummer='".str_replace('.','',$utlegg['Kontonummer'])."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
-      $this->db->query("UPDATE Utleggskvitteringer SET Beskrivelse='".$utlegg['Beskrivelse']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
-      $this->db->query("UPDATE Utleggskvitteringer SET Belop='".$utlegg['Belop']."' WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
-      $this->db->query("UPDATE Utleggskvitteringer SET DatoEndret=Now() WHERE UtleggID=".$utlegg['UtleggID']." LIMIT 1");
-      return $utlegg['UtleggID'];
+      return $utlegg;
     }
 
     function slettutleggskvittering($ID) {
@@ -556,9 +495,14 @@
       }
     }
 
-    function fakturaer() {
-      $rfaktuaer = $this->db->query("SELECT FakturaID,DatoRegistrert,DatoFakturadato,OrganisasjonID,(SELECT Navn FROM Organisasjoner WHERE (Organisasjoner.OrganisasjonID=f.OrganisasjonID) LIMIT 1) AS OrganisasjonNavn,PersonID,(SELECT Fornavn FROM Personer WHERE (Personer.PersonID=f.PersonID) LIMIT 1) AS PersonNavn,AdresseID,PersonAnsvarligID,(SELECT Fornavn FROM Personer WHERE (Personer.PersonID=f.PersonAnsvarligID) LIMIT 1) AS PersonAnsvarligNavn,Referanse,(SELECT SUM(Pris*Antall) FROM FakturaLinjer WHERE (FakturaLinjer.FakturaID=f.FakturaID)) AS FakturaSum,StatusID FROM Fakturaer f ORDER BY DatoFakturadato ASC");
-      foreach ($rfaktuaer->result_array() as $faktura) {
+    function fakturaer($filter=null) {
+      $sql = "SELECT FakturaID,DatoRegistrert,DatoFakturadato,OrganisasjonID,(SELECT Navn FROM Organisasjoner WHERE (Organisasjoner.OrganisasjonID=f.OrganisasjonID) LIMIT 1) AS OrganisasjonNavn,PersonID,(SELECT Fornavn FROM Personer WHERE (Personer.PersonID=f.PersonID) LIMIT 1) AS PersonNavn,AdresseID,PersonAnsvarligID,(SELECT Fornavn FROM Personer WHERE (Personer.PersonID=f.PersonAnsvarligID) LIMIT 1) AS PersonAnsvarligNavn,Referanse,(SELECT SUM(Pris*Antall) FROM FakturaLinjer WHERE (FakturaLinjer.FakturaID=f.FakturaID)) AS FakturaSum,StatusID FROM Fakturaer f WHERE 1";
+      if (isset($filter['StatusID'])) {
+        $sql = $sql." AND (StatusID=".$filter['StatusID'].")";
+      }
+      $sql = $sql." ORDER BY DatoFakturadato ASC";
+      $rfakturaer = $this->db->query($sql);
+      foreach ($rfakturaer->result_array() as $faktura) {
         $faktura['Status'] = $this->FakturaStatus[$faktura['StatusID']];
         $fakturaer[] = $faktura;
       }
@@ -568,10 +512,16 @@
     }
 
     function faktura($ID) {
-      $rfakturaer = $this->db->query("SELECT FakturaID,Referanse,Notater,PersonAnsvarligID FROM Fakturaer WHERE (FakturaID=".$ID.") LIMIT 1");
+      $rfakturaer = $this->db->query("SELECT FakturaID,Referanse,DatoFakturadato,Notater,PersonAnsvarligID,OrganisasjonID,StatusID FROM Fakturaer WHERE (FakturaID=".$ID.") LIMIT 1");
       if ($faktura = $rfakturaer->row_array()) {
+        $faktura['Fakturalinjer'] = $this->fakturalinjer($faktura['FakturaID']);
         return $faktura;
       }
+    }
+
+    private function fakturalinjer($ID) {
+      $rlinjer = $this->db->query("SELECT LinjeID,Produktnummer,Beskrivelse,Antall,Pris FROM FakturaLinjer WHERE (FakturaID=".$ID.") ORDER BY DatoRegistrert ASC");
+      return $rlinjer->result_array();
     }
 
     function lagrefaktura($ID = null, $faktura) {
@@ -585,6 +535,23 @@
         $faktura['FakturaID'] = $ID;
       }
       return $faktura;
+    }
+
+    function lagrefakturalinje($ID=null,$linje) {
+      $linje['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID==null) {
+        $linje['DatoRegistrert'] = $linje['DatoEndret'];
+        $this->db->query($this->db->insert_string('FakturaLinjer',$linje));
+        $linje['LinjeID'] = $this->db->insert_id();
+      } else {
+        if ($linje['Antall'] == 0) {
+          $this->db->query("DELETE FROM FakturaLinjer WHERE LinjeID=".$ID." LIMIT 1");
+        } else {
+          $this->db->query($this->db->update_string('FakturaLinjer',$linje,'LinjeID='.$ID));
+        }
+        $linje['LinjeID'] = $ID;
+      }
+      return $linje;
     }
 
   }

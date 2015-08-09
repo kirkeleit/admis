@@ -1,7 +1,4 @@
-<?php echo form_open_multipart('okonomi/utleggskvittering'); ?>
-<h2>IKKE BRUK!</h2>
-<input type="hidden" name="UtleggID" value="<?php echo set_value('UtleggID',$Utlegg['UtleggID']); ?>" />
-
+<h3 class="sub-header">Utleggskvittering</h3>
 
 <?php
   $SkjemaOk = 1;
@@ -23,7 +20,8 @@
   }
   if ((isset($SkjemaFeil)) and ($Utlegg['UtleggID'] > 0)) {
 ?>
-<div>
+<div class="alert alert-warning" role="alert">
+<b>Følgende feil må rettes før utleggskvitteringen kan signeres:</b>
 <ul>
 <?php
     foreach ($SkjemaFeil as $Feil) {
@@ -38,16 +36,20 @@
   }
 ?>
 
+<?php echo form_open_multipart('okonomi/utleggskvittering/'.$Utlegg['UtleggID']); ?>
+<h2>IKKE BRUK!</h2>
+<input type="hidden" name="UtleggID" value="<?php echo set_value('UtleggID',$Utlegg['UtleggID']); ?>" />
 <div class="panel panel-default">
-  <div class="panel-heading">Utlegg</div>
+  <div class="panel-heading">&nbsp;</div>
+
   <div class="panel-body">
     <div class="form-group">
       <label for="DatoUtlegg">Dato:</label>
-      <input type="date" class="form-control" name="DatoUtlegg" value="<?php echo set_value('DatoUtlegg',date("d.m.Y",strtotime($Utlegg['DatoUtlegg']))); ?>" />
+      <input type="date" class="form-control" name="DatoUtlegg" value="<?php echo set_value('DatoUtlegg',($Utlegg['DatoUtlegg'] != '0000-00-00' ? ($Utlegg['DatoUtlegg'] == '' ? '' : date("d.m.Y",strtotime($Utlegg['DatoUtlegg']))) : '')); ?>" />
     </div>
 
     <div class="form-group">
-      <label for="PersonID">Medlem:</label>
+      <label for="PersonID">Person:</label>
       <select name="PersonID" class="form-control">
         <option value="0" <?php echo set_select('PersonID',0,($Utlegg['PersonID'] == 0) ? TRUE : FALSE); ?>>(ingen medlem)</option>
 <?php

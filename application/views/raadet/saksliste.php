@@ -1,4 +1,5 @@
 <h3 class="sub-header">Saksliste <a href="<?php echo site_url('/raadet/nysak'); ?>" class="btn btn-default" role="button"><span class="glyphicon glyphicon-plus"></span></a></h3>
+
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>
@@ -27,7 +28,7 @@
   } else {
 ?>
       <tr>
-        <td colspan="6">Ingen saker registrert.</td>
+        <td colspan="6">Ingen saker i utvalg.</td>
       </tr>
 <?php
   }

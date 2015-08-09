@@ -1,13 +1,14 @@
+<h3 class="sub-header">Oppgavedetaljer</h3>
+
 <?php echo form_open('oppgaver/oppgave/'.$Oppgave['OppgaveID']); ?>
 <input type="hidden" name="OppgaveID" value="<?php echo set_value('OppgaveID',$Oppgave['OppgaveID']); ?>" />
 <div class="panel panel-default">
-  <div class="panel-heading"><h4>Oppgave</h4></div>
-
+  <div class="panel-heading">&nbsp;</div>
   <div class="panel-body">
 
     <div class="form-group">
       <label for="DatoFrist">Frist:</label>
-      <input type="date" class="form-control" name="DatoFrist" id="DatoFrist" value="<?php echo set_value('DatoFrist',($Oppgave['DatoFrist'] != "0000-00-00") ? date("d.m.Y",strtotime($Oppgave['DatoFrist'])) : '' ); ?>" placeholder="dd.mm.YYYY" />
+      <input type="date" class="form-control" name="DatoFrist" id="DatoFrist" value="<?php echo set_value('DatoFrist',($Oppgave['DatoFrist'] != "0000-00-00") ? ($Oppgave['DatoFrist'] == '' ? '' : date("d.m.Y",strtotime($Oppgave['DatoFrist']))) : '' ); ?>" placeholder="dd.mm.YYYY" />
     </div>
 
     <div class="form-group">
@@ -63,6 +64,7 @@
   </div>
 </div>
 
+<?php if (isset($Oppgave['OppgaveID'])) { ?>
 <div class="panel panel-default">
   <div class="panel-heading">Utført arbeid</div>
   <div class="panel-body">
@@ -87,4 +89,5 @@
     </div>
   </div>
 </div>
+<?php } ?>
 <?php echo form_close(); ?>

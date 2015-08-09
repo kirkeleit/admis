@@ -1,4 +1,5 @@
 <h3 class="sub-header">Innkjøpsordrer <a href="<?php echo site_url('/okonomi/nyinnkjopsordre'); ?>" class="btn btn-default" role="button"><span class="glyphicon glyphicon-plus"></span></a></h3>
+
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>
@@ -36,7 +37,7 @@
   } else {
 ?>
       <tr>
-        <td colspan="5">Ingen innkjopsordrer er registrert.</td>
+        <td colspan="5">Ingen innkjopsordrer i utvalg.</td>
       </tr>
 <?php
   }

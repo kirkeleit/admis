@@ -13,28 +13,22 @@ class Materiell extends CI_Controller {
   }
 
   public function nygruppe() {
-    $gruppe['ID'] = 0;
-    $gruppe['Navn'] = "";
-    $gruppe['Beskrivelse'] = "";
-    $data['Gruppe'] = $gruppe;
+    $data['Gruppe'] = null;
     $this->template->load('standard','materiell/gruppe',$data);
   }
 
   public function gruppe() {
     $this->load->model('Materiell_model');
-    $this->form_validation->set_rules('ID','ID','required');
-    $this->form_validation->set_rules('Navn','Navn','required|trim');
-    $this->form_validation->set_rules('Beskrivelse','Beskrivelse','trim');
-    if ($this->form_validation->run() == FALSE) {
+    if ($this->input->post('GruppeLagre')) {
+      $ID = $this->input->post('GruppeID');
+      $gruppe['Navn'] = $this->input->post('Navn');
+      $gruppe['Beskrivelse'] = $this->input->post('Beskrivelse');
+      $gruppe = $this->Materiell_model->lagregruppe($ID,$gruppe);
+      redirect('materiell/gruppe/'.$gruppe['GruppeID']);
+    } else {
       $data['Gruppe'] = $this->Materiell_model->gruppe($this->uri->segment(3));
       $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("GruppeID" => $this->uri->segment(3)));
       $this->template->load('standard','materiell/gruppe',$data);
-    } else {
-      $gruppe['ID'] = $this->input->post('ID');
-      $gruppe['Navn'] = $this->input->post('Navn');
-      $gruppe['Beskrivelse'] = $this->input->post('Beskrivelse');
-      $this->Materiell_model->lagregruppe($gruppe);
-      redirect('materiell/grupper/');
     }
   }
 
@@ -45,25 +39,21 @@ class Materiell extends CI_Controller {
   }
 
   public function nyprodusent() {
-    $produsent['ID'] = 0;
-    $produsent['Navn'] = "";
-    $data['Produsent'] = $produsent;
+    $data['Produsent'] = null;
     $this->template->load('standard','materiell/produsent',$data);
   }
 
   public function produsent() {
     $this->load->model('Materiell_model');
-    $this->form_validation->set_rules('ID','ID','required');
-    $this->form_validation->set_rules('Navn','Navn','required|trim');
-    if ($this->form_validation->run() == FALSE) {
+    if ($this->input->post('ProdusentID')) {
+      $ID = $this->input->post('ProdusentID');
+      $produsent['Navn'] = $this->input->post('Navn');
+      $produsent = $this->Materiell_model->lagreprodusent($ID,$produsent);
+      redirect('materiell/produsenter/'.$produsent['ProdusentID']);
+    } else {
       $data['Produsent'] = $this->Materiell_model->produsent($this->uri->segment(3));
       $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("ProdusentID" => $this->uri->segment(3)));
       $this->template->load('standard','materiell/produsent',$data);
-    } else {
-      $produsent['ID'] = $this->input->post('ID');
-      $produsent['Navn'] = $this->input->post('Navn');
-      $this->Materiell_model->lagreprodusent($produsent);
-      redirect('materiell/produsenter/');
     }
   }
 
@@ -74,43 +64,35 @@ class Materiell extends CI_Controller {
   }
 
   public function nylagerplass() {
-    $lagerplass['ID'] = 0;
-    $lagerplass['Navn'] = "";
-    $lagerplass['Kode'] = "";
-    $lagerplass['Beskrivelse'] = "";
-    $data['Lagerplass'] = $lagerplass;
+    $data['Lagerplass'] = null;
     $this->template->load('standard','materiell/lagerplass',$data);
   }
 
   public function lagerplass() {
     $this->load->model('Materiell_model');
-    $this->form_validation->set_rules('ID','ID','required');
-    $this->form_validation->set_rules('Navn','Navn','required|trim');
-    $this->form_validation->set_rules('Kode','Kode','required|trim');
-    $this->form_validation->set_rules('Beskrivelse','Beskrivelse','trim');
-    if ($this->form_validation->run() == FALSE) {
+    if ($this->input->post('LagerplassLagre')) {
+      $ID = $this->input->post('LagerplassID');
+      $lagerplass['Navn'] = $this->input->post('Navn');
+      $lagerplass['Kode'] = $this->input->post('Kode');
+      $lagerplass['Beskrivelse'] = $this->input->post('Beskrivelse');
+      $lagerplass = $this->Materiell_model->lagrelagerplass($ID,$lagerplass);
+      redirect('materiell/lagerplass/'.$lagerplass['LagerplassID']);
+    } else {
       $data['Lagerplass'] = $this->Materiell_model->lagerplass($this->uri->segment(3));
-      $data['Kasser'] = $this->Materiell_model->utstyrskasser(array("LagerID" => $this->uri->segment(3)));
+      $data['Kasser'] = $this->Materiell_model->utstyrskasser(array("LagerplassID" => $data['Lagerplass']['LagerplassID']));
       if ($this->input->get('fkasseid') == "-1") {
-        $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("LagerID" => $this->uri->segment(3)));
+        $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("LagerplassID" => $data['Lagerplass']['LagerplassID']));
       } else {
         if ($this->input->get('fkasseid')) {
-          $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("LagerID" => $this->uri->segment(3), "KasseID" => $this->input->get('fkasseid')));
+          $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("LagerplassID" => $data['Lagerplass']['LagerplassID'], "KasseID" => $this->input->get('fkasseid')));
         } else {
-          $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("LagerID" => $this->uri->segment(3), "KasseID" => "0"));
+          $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("LagerplassID" => $data['Lagerplass']['LagerplassID'], "KasseID" => "0"));
         }
       }
       //} else {
       //  $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("LagerID" => $this->uri->segment(3)));
       //}
       $this->template->load('standard','materiell/lagerplass',$data);
-    } else {
-      $lagerplass['ID'] = $this->input->post('ID');
-      $lagerplass['Navn'] = $this->input->post('Navn');
-      $lagerplass['Kode'] = $this->input->post('Kode');
-      $lagerplass['Beskrivelse'] = $this->input->post('Beskrivelse');
-      $this->Materiell_model->lagrelagerplass($lagerplass);
-      redirect('materiell/lagerplass/'.$lagerplass['ID']);
     }
   }
 
@@ -121,25 +103,21 @@ class Materiell extends CI_Controller {
   }
 
   public function nyutstyrstype() {
-    $utstyrstype['ID'] = 0;
-    $utstyrstype['Navn'] = "";
-    $data['Type'] = $utstyrstype;
+    $data['Type'] = null;
     $this->template->load('standard','materiell/utstyrstype',$data);
   }
 
   public function utstyrstype() {
     $this->load->model('Materiell_model');
-    $this->form_validation->set_rules('ID','ID','required');
-    $this->form_validation->set_rules('Navn','Navn','required|trim');
-    if ($this->form_validation->run() == FALSE) {
+    if ($this->input->post('UtstyrstypeLagre')) {
+      $ID = $this->input->post('TypeID');
+      $utstyrstype['Navn'] = $this->input->post('Navn');
+      $utstyrstype = $this->Materiell_model->lagreutstyrstype($ID,$utstyrstype);
+      redirect('materiell/utstyrstype/'.$utstyrstype['TypeID']);
+    } else {
       $data['Type'] = $this->Materiell_model->utstyrstype($this->uri->segment(3));
       $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array("TypeID" => $this->uri->segment(3)));
       $this->template->load('standard','materiell/utstyrstype',$data);
-    } else {
-      $utstyrstype['ID'] = $this->input->post('ID');
-      $utstyrstype['Navn'] = $this->input->post('Navn');
-      $this->Materiell_model->lagreutstyrstype($utstyrstype);
-      redirect('materiell/utstyrstyper/');
     }
   }
 
@@ -158,6 +136,7 @@ class Materiell extends CI_Controller {
   public function utstyr() {
     $this->load->model('Materiell_model');
     $this->load->model('Kontakter_model');
+    $this->load->model('Kompetanse_model');
     $this->form_validation->set_rules('ID','ID','required');
     $this->form_validation->set_rules('FaggruppeID','FaggruppeID','required');
     $this->form_validation->set_rules('GruppeID','GruppeID','required');
@@ -172,7 +151,7 @@ class Materiell extends CI_Controller {
     $this->form_validation->set_rules('LagerID','LagerID','trim');
     $this->form_validation->set_rules('KasseID','KasseID','trim');
     if ($this->form_validation->run() == FALSE) {
-      $data['Faggrupper'] = $this->Kontakter_model->faggrupper();
+      $data['Faggrupper'] = $this->Kompetanse_model->faggrupper();
       $data['Grupper'] = $this->Materiell_model->grupper();
       $data['Typer'] = $this->Materiell_model->utstyrstyper();
       $data['Produsenter'] = $this->Materiell_model->produsenter();

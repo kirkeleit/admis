@@ -1,4 +1,5 @@
-<h3 class="sub-header">Alle oppgaver</h3>
+<h3 class="sub-header">Alle oppgaver <a href="<?php echo site_url('/oppgaver/nyoppgave'); ?>" class="btn btn-default" role="button"><span class="glyphicon glyphicon-plus"></span></a></h3>
+
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>
@@ -28,6 +29,12 @@
       </tr>
 <?php
     }
+  } else {
+?>
+      <tr>
+        <td colspan="7">Ingen oppgaver i utvalg.</td>
+      </tr>
+<?php
   }
 ?>
     </tbody>

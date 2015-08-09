@@ -31,12 +31,16 @@
       }
     }
 
-    function lagresak($sak) {
-      if ($sak['SakID'] == 0) {
-        $this->db->query("INSERT INTO Saker (DatoRegistrert) VALUES (Now())");
+    function lagresak($ID=null,$sak) {
+      $sak['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $sak['DatoRegistrert'] = $sak['DatoEndret'];
+        $this->db->query($this->db->insert_string('Saker',$sak));
         $sak['SakID'] = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Saker',$sak,'SakID='.$ID));
+        $sak['SakID'] = $ID;
       }
-      $this->db->query($this->db->update_string('Saker',array('PersonID' => $sak['PersonID'],'Tittel' => $sak['Tittel'],'Saksbeskrivelse' => $sak['Saksbeskrivelse'],'DatoEndret'=>date('Y-m-d H:i:s')),'SakID='.$sak['SakID']));
       return $sak;
     }
 

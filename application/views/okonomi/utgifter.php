@@ -1,4 +1,5 @@
 <h3 class="sub-header">Utgifter <a href="<?php echo site_url('/okonomi/nyutgift'); ?>" class="btn btn-default" role="button"><span class="glyphicon glyphicon-plus"></span></a></h3>
+
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>
@@ -6,44 +7,38 @@
         <th>Dato</th>
         <th>Aktivitet</th>
         <th>Konto</th>
-        <th>Medlem</th>
+        <th>Person</th>
         <th>Beskrivelse</th>
         <th>Beløp</th>
-        <th>&nbsp;</th>
       </tr>
     </thead>
     <tbody>
 <?php
   $Totalt = 0;
-
   if (isset($Utgifter)) {
     foreach ($Utgifter as $Utgift) {
 ?>
       <tr>
-        <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],$Utgift['DatoBokfort']); ?></td>
+        <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],date('d.m.Y',strtotime($Utgift['DatoBokfort']))); ?></td>
         <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],$Utgift['AktivitetID'],'title="'.$Utgift['Aktivitet'].'"'); ?></td>
         <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],$Utgift['KontoID'],'title="'.$Utgift['Konto'].'"'); ?></td>
         <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],($Utgift['PersonID'] > 0 ? $Utgift['PersonInitialer'] : '&nbsp;'),'title="'.$Utgift['Person'].'"'); ?></td>
-        <td><a href="<?php echo site_url(); ?>/okonomi/utgift/<?php echo $Utgift['UtgiftID']; ?>"><?php echo $Utgift['Beskrivelse']; ?></a></td>
-        <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],'kr '.number_format($Utgift['Belop'],2,',','.')); ?></td>
-<?php if (!isset($Utgift['Filer'])) { ?>
-        <td>&nbsp;</td>
-<?php } else { ?>
-        <td><img src="/grafikk/icons/picture.png" /></td>
-<?php } ?>
+        <td><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],$Utgift['Beskrivelse']); ?></a></td>
+        <td class="text-right"><?php echo anchor('/okonomi/utgift/'.$Utgift['UtgiftID'],'kr '.number_format($Utgift['Belop'],2,',','.')); ?></td>
       </tr>
 <?php
       $Totalt = $Totalt + $Utgift['Belop'];
     }
 ?>
       <tr>
-        <td colspan="7" style="text-align: right;"><b><?php echo "kr ".number_format($Totalt,2,',','.'); ?></b></td>
+        <td colspan="5">&nbsp;</td>
+        <td class="text-right"><?php echo 'kr '.number_format($Totalt,2,',','.'); ?></td>
       </tr>
 <?php
   } else {
 ?>
       <tr>
-        <td colspan="7">Ingen utgifter i år!</td>
+        <td colspan="6">Ingen utgifter i utvalg.</td>
       </tr>
 <?php
   }

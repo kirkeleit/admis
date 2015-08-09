@@ -1,4 +1,5 @@
 <h3 class="sub-header">Mine oppgaver <a href="<?php echo site_url('/oppgaver/nyoppgave'); ?>" class="btn btn-default" role="button"><span class="glyphicon glyphicon-plus"></span></a></h3>
+
 <div class="table-responsive">
   <table class="table table-striped table-hover table-condensed">
     <thead>
@@ -17,15 +18,21 @@
     foreach ($Oppgaver as $Oppgave) {
 ?>
       <tr>
-        <td><a href="<?php echo site_url(); ?>/oppgaver/oppgave/<?php echo $Oppgave['OppgaveID']; ?>"><?php echo date("d.m.Y",strtotime($Oppgave['DatoRegistrert'])); ?></a></td>
-        <td><a href="<?php echo site_url(); ?>/oppgaver/oppgave/<?php echo $Oppgave['OppgaveID']; ?>"><?php echo $Oppgave['Prioritet']; ?></a></td>
-        <td><a href="<?php echo site_url(); ?>/oppgaver/oppgave/<?php echo $Oppgave['OppgaveID']; ?>"><?php if ($Oppgave['DatoFrist'] !== "0000-00-00") { echo date("d.m.Y",strtotime($Oppgave['DatoFrist'])); } else { echo "&nbsp;"; } ?></a></td>
-        <td><a href="<?php echo site_url(); ?>/oppgaver/oppgave/<?php echo $Oppgave['OppgaveID']; ?>"><?php echo $Oppgave['Tittel']; ?></a></td>
-        <td><a href="<?php echo site_url(); ?>/oppgaver/oppgave/<?php echo $Oppgave['OppgaveID']; ?>"><?php echo $Oppgave['PersonOpprettetNavn']; ?></a></td>
-        <td><a href="<?php echo site_url(); ?>/oppgaver/oppgave/<?php echo $Oppgave['OppgaveID']; ?>"><?php echo $Oppgave['Status']; ?></a></td>
-     </tr>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],date("d.m.Y",strtotime($Oppgave['DatoRegistrert']))); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],$Oppgave['Prioritet']); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],($Oppgave['DatoFrist'] !== "0000-00-00" ? date("d.m.Y",strtotime($Oppgave['DatoFrist'])) : '&nbsp;')); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],$Oppgave['Tittel']); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],$Oppgave['PersonOpprettetNavn']); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],$Oppgave['Status']); ?></td>
+      </tr>
 <?php
     }
+  } else {
+?>
+      <tr>
+        <td colspan="5">Ingen oppgaver i utvalg.</td>
+      </tr>
+<?php
   }
 ?>
     </tbody>
@@ -53,15 +60,21 @@
     foreach ($OppgaverUtenAnsvarlige as $Oppgave) {
 ?>
       <tr>
-        <td><?php echo date("d.m.Y",strtotime($Oppgave['DatoRegistrert'])); ?></td>
-        <td><?php echo $Oppgave['Prioritet']; ?></td>
-        <td><?php if ($Oppgave['DatoFrist'] !== "0000-00-00") { echo date("d.m.Y",strtotime($Oppgave['DatoFrist'])); } else { echo "&nbsp;"; } ?></td>
-        <td><a href="<?php echo site_url(); ?>/oppgaver/oppgave/<?php echo $Oppgave['OppgaveID']; ?>"><?php echo $Oppgave['Tittel']; ?></a></td>
-        <td><?php echo $Oppgave['PersonOpprettetNavn']; ?></td>
-        <td><?php echo $Oppgave['Status']; ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],date("d.m.Y",strtotime($Oppgave['DatoRegistrert']))); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],$Oppgave['Prioritet']); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],($Oppgave['DatoFrist'] !== "0000-00-00" ? date("d.m.Y",strtotime($Oppgave['DatoFrist'])) : '&nbsp;')); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],$Oppgave['Tittel']); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],$Oppgave['PersonOpprettetNavn']); ?></td>
+        <td><?php echo anchor('/oppgaver/oppgave/'.$Oppgave['OppgaveID'],$Oppgave['Status']); ?></td>
       </tr>
 <?php
     }
+  } else {
+?>
+      <tr>
+        <td colspan="5">Ingen oppgaver i utvalg.</td>
+      </tr>
+<?php
   }
 ?>
     </tbody>

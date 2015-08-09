@@ -1,28 +1,31 @@
-<?php echo form_open('materiell/lagerplass'); ?>
-<input type="hidden" name="ID" value="<?php echo set_value('ID',$Lagerplass['ID']); ?>" />
-<fieldset>
-  <legend>Lagerplass</legend>
+<h3 class="sub-header">Lagerplassdetaljer</h3>
 
-  <p>
-    <label for="Navn">Navn:</label>
-    <input type="text" name="Navn" id="Navn" value="<?php echo set_value('Navn',$Lagerplass['Navn']); ?>" />
-  </p>
+<?php echo form_open('materiell/lagerplass/'.$Lagerplass['LagerplassID']); ?>
+<input type="hidden" name="LagerplassID" value="<?php echo set_value('LagerplassID',$Lagerplass['LagerplassID']); ?>" />
+<div class="panel panel-default">
+  <div class="panel-heading">&nbsp;</div>
 
-  <p>
-    <label for="Kode">Kode:</label>
-    <input type="text" name="Kode" id="Kode" value="<?php echo set_value('Kode',$Lagerplass['Kode']); ?>" />
-  </p>
+  <div class="panel-body">
+    <div class="form-group">
+      <label for="Navn">Navn:</label>
+      <input type="text" name="Navn" class="form-control" id="Navn" value="<?php echo set_value('Navn',$Lagerplass['Navn']); ?>" />
+    </div>
 
-  <p>
-    <label for="Beskrivelse">Beskrivelse:</label>
-    <textarea name="Beskrivelse" id="Beskrivelse"><?php echo set_value('Beskrivelse',$Lagerplass['Beskrivelse']); ?></textarea>
-  </p>
+    <div class="form-group">
+      <label for="Kode">Kode:</label>
+      <input type="text" name="Kode" class="form-control" id="Kode" value="<?php echo set_value('Kode',$Lagerplass['Kode']); ?>" />
+    </div>
 
-  <p class="handlinger">
-    <label>&nbsp;</label>
-    <input type="submit" value="Lagre lagerplass" />
-  </p>
-</fieldset>
+    <div class="form-group">
+      <label for="Beskrivelse">Beskrivelse:</label>
+      <textarea name="Beskrivelse" class="form-control" id="Beskrivelse"><?php echo set_value('Beskrivelse',$Lagerplass['Beskrivelse']); ?></textarea>
+    </div>
+
+    <div class="form-group">
+      <input type="submit" class="btn btn-primary" value="Lagre lagerplass" />
+    </div>
+  </div>
+</div>
 <?php echo form_close(); ?>
 
 <fieldset>
@@ -37,7 +40,7 @@
 <?php
   foreach ($Kasser as $Kasse) {
 ?>
-      <option value="<?php echo $Kasse['ID']; ?>"><?php echo $Kasse['Navn']." (".$Kasse['Antall'].")"; ?></option>
+      <option value="<?php echo $Kasse['KasseID']; ?>"><?php echo $Kasse['Navn']." (".$Kasse['Antall'].")"; ?></option>
 <?php
   }
 ?>
@@ -46,29 +49,44 @@
 </form>
 
 <?php if (isset($Utstyrsliste)) { ?>
-  <table>
-    <tr>
-      <th>UID</th>
-      <th>Type</th>
-      <th>Produsent</th>
-      <th>Modell</th>
-      <th>Dato</th>
-      <th>Status</th>
-    </tr>
+<div class="panel panel-default">
+  <div class="panel-heading">Utstyrsliste</div>
+
+  <div class="panel-body">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover table-condensed">
+        <thead>
+          <tr>
+            <th>UID</th>
+            <th>Type</th>
+            <th>Produsent</th>
+            <th>Modell</th>
+            <th>Dato</th>
+            <th>Plass</th>
+            <th>Kasse</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
 <?php
   foreach ($Utstyrsliste as $Utstyr) {
 ?>
-    <tr>
-      <td><a href="<?php echo site_url(); ?>/materiell/utstyr/<?php echo $Utstyr['ID']; ?>"><?php echo $Utstyr['UID']; ?></a></td>
-      <td><?php if (isset($Utstyr['Type']['Navn'])) { echo $Utstyr['Type']['Navn']; } else { echo "&nbsp"; } ?></td>
-      <td><?php if (isset($Utstyr['Produsent']['Navn'])) { echo $Utstyr['Produsent']['Navn']; } else { echo "&nbsp;"; } ?></td>
-      <td><?php echo $Utstyr['Modell']; ?></td>
-      <td><?php echo $Utstyr['DatoAnskaffet']; ?></td>
-      <td><?php echo $Utstyr['Status']; ?></td>
-    </tr>
+          <tr>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],$Utstyr['UID']); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],(isset($Utstyr['TypeNavn']) ? $Utstyr['TypeNavn'] : '&nbsp;')); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],(isset($Utstyr['ProdusentNavn']) ? $Utstyr['ProdusentNavn'] : '&nbsp;')); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],$Utstyr['Modell']); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],date('d.m.Y',strtotime($Utstyr['DatoAnskaffet']))); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],(isset($Utstyr['LagerplassNavn']) ? $Utstyr['LagerplassNavn'] : '&nbsp;')); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],(isset($Utstyr['KasseNavn']) ? $Utstyr['KasseNavn'] : '&nbsp;')); ?></td>
+            <td><?php echo anchor('/materiell/utstyr/'.$Utstyr['UtstyrID'],$Utstyr['Status']); ?></td>
+          </tr>
 <?php
   }
 ?>
-  </table>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
 <?php } ?>
-</fieldset>

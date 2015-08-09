@@ -1,8 +1,13 @@
 <?php
   class Kontakter_model extends CI_Model {
 
-    function personer() {
-      $rpersoner = $this->db->query("SELECT PersonID,Fornavn,Etternavn,Mobilnr,Epost,AdresseID,(SELECT Poststed FROM PostAdresser,PostNummer WHERE (PostAdresser.Postnummer=PostNummer.Postnummer) AND (AdresseID=p.AdresseID) LIMIT 1) As Poststed,TIMESTAMPDIFF(YEAR,DatoFodselsdato,CURDATE()) AS Alder FROM Personer p ORDER BY Fornavn, Etternavn");
+    function personer($filter=null) {
+      $sql = "SELECT PersonID,Fornavn,Etternavn,Mobilnr,Epost,AdresseID,(SELECT Poststed FROM PostAdresser,PostNummer WHERE (PostAdresser.Postnummer=PostNummer.Postnummer) AND (AdresseID=p.AdresseID) LIMIT 1) As Poststed,TIMESTAMPDIFF(YEAR,DatoFodselsdato,CURDATE()) AS Alder,TIMESTAMPDIFF(YEAR,DatoMedlemsdato,CURDATE()) AS Medlemsar FROM Personer p WHERE 1";
+      if (isset($filter['ErMedlem'])) {
+        $sql = $sql." AND (Medlem=1)";
+      }
+      $sql = $sql." ORDER BY Fornavn, Etternavn";
+      $rpersoner = $this->db->query($sql);
       foreach ($rpersoner->result_array() as $person) {
         $personer[] = $person;
         unset($person);
@@ -10,6 +15,10 @@
       if (isset($personer)) {
         return $personer;
       }
+    }
+
+    function medlemmer() {
+      return $this->personer(array('ErMedlem' => 1));
     }
 
     function person($ID) {
@@ -128,67 +137,6 @@
       $this->db->query("DELETE FROM Organisasjoner WHERE OrganisasjonID=".$ID." LIMIT 1");
     }
 
-    function medlemmer() {
-      $resultat = $this->db->query("SELECT * FROM Medlemmer,Personer WHERE Personer.PersonID=Medlemmer.PersonID ORDER BY Fornavn, Etternavn");
-      foreach ($resultat->result() as $rad) {
-        $data['PersonID'] = $rad->PersonID;
-        $data['Initialer'] = $rad->Initialer;
-        $data['Fornavn'] = $rad->Fornavn;
-        $data['Etternavn'] = $rad->Etternavn;
-        $medlemmer[] = $data;
-        unset($data);
-      }
-      if (isset($medlemmer)) {
-        return $medlemmer;
-      }
-    }
-
-    function faggrupper() {
-      $resultat = $this->db->query("SELECT * FROM Faggrupper ORDER BY Navn ASC");
-      foreach ($resultat->result() as $rad) {
-        $faggruppe['FaggruppeID'] = $rad->FaggruppeID;
-        $faggruppe['Navn'] = $rad->Navn;
-        $faggruppe['PersonLederID'] = $rad->PersonLederID;
-        $medlemmer = $this->db->query("SELECT * FROM Medlemmer,Personer WHERE Personer.PersonID=Medlemmer.PersonID AND Medlemmer.PersonID=".$rad->PersonLederID." LIMIT 1");
-        if ($medlem = $medlemmer->row()) {
-          $faggruppe['PersonLederNavn'] = $medlem->Fornavn;
-        }
-        $faggrupper[] = $faggruppe;
-        unset($faggruppe);
-      }
-      if (isset($faggrupper)) {
-        return $faggrupper;
-      }
-    }
-
-    function faggruppe($ID) {
-      $resultat = $this->db->query("SELECT * FROM Faggrupper WHERE (FaggruppeID=".$ID.") LIMIT 1");
-      if ($rad = $resultat->row()) {
-        $faggruppe['FaggruppeID'] = $rad->FaggruppeID;
-        $faggruppe['Navn'] = $rad->Navn;
-        if ($rad->PersonLederID > 0) {
-          $personer = $this->db->query("SELECT * FROM Personer WHERE (PersonID=".$rad->PersonLederID.") LIMIT 1");
-          if ($person = $personer->row()) {
-            $faggruppe['PersonLederID'] = $person->PersonID;
-            $faggruppe['PersonLederNavn'] = $person->Fornavn;
-            unset($person);
-          }
-          unset($personer);
-        }
-        if ($rad->PersonNestlederID > 0) {
-          $personer = $this->db->query("SELECT * FROM Personer WHERE (PersonID=".$rad->PersonNestlederID.") LIMIT 1");
-          if ($person = $personer->row()) {
-            $faggruppe['PersonNestlederID'] = $person->PersonID;
-            $faggruppe['PersonNestlederNavn'] = $person->Fornavn;
-            unset($person);
-          }
-          unset($personer);
-        }
-        $faggruppe['Beskrivelse'] = $rad->Beskrivelse;
-      }
-      return $faggruppe;
-    }
-
     function medlemsgrupper($PersonID=null) {
       if ($PersonID == null) {
         $sql = "SELECT GruppeID,Navn,Beskrivelse,(SELECT COUNT(*) FROM PersonXMedlemsgruppe WHERE (GruppeID=g.GruppeID)) AS Antall,Alarmgruppe FROM Medlemsgrupper g ORDER BY Navn";
@@ -237,6 +185,27 @@
         $gruppe['Personer'] = $personer;
       }
       return $gruppe;
+    }
+
+    function medlemsgruppelagre($ID=null,$gruppe) {
+      $gruppe['DatoEndret'] = date('Y-m-d H:i:s');
+      if ($ID == null) {
+        $gruppe['DatoRegistrert'] = $gruppe['DatoEndret'];
+        $this->db->query($this->db->insert_string('Medlemsgrupper',$gruppe));
+        $gruppe['GruppeID'] = $this->db->insert_id();
+      } else {
+        $this->db->query($this->db->update_string('Medlemsgrupper',$gruppe,'GruppeID='.$ID));
+        $gruppe['GruppeID'] = $ID;
+      }
+      return $gruppe;
+    }
+
+    function koblekompetansemedlemsgruppe($KompetanseID,$GruppeID) {
+      $this->db->query("INSERT INTO MedlemsgruppeKompetanseKrav (KompetanseID,GruppeID) VALUES (".$KompetanseID.",".$GruppeID.")");
+    }
+
+    function fjernkompetansemedlemsgruppe($KompetanseID,$GruppeID) {
+      $this->db->query("DELETE FROM MedlemsgruppeKompetanseKrav WHERE KompetanseID=".$KompetanseID." AND GruppeID=".$GruppeID);
     }
 
     function koblepersonmedlemsgruppe($PersonID,$GruppeID) {

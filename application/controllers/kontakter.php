@@ -13,8 +13,7 @@ class Kontakter extends CI_Controller {
   }
 
   public function nyperson() {
-    $person = null;
-    $data['Person'] = $person;
+    $data['Person'] = null;
     $this->template->load('standard','kontakter/person',$data);
   }
 
@@ -44,7 +43,7 @@ class Kontakter extends CI_Controller {
           $this->Kontakter_model->fjernpersonmedlemsgruppe($person['PersonID'],$grupper[$i]);
         }
       }
-      redirect('/kontakter/person/'.$ID);
+      redirect('/kontakter/person/'.$person['PersonID']);
     } else {
       $data['Person'] = $this->Kontakter_model->person($this->uri->segment(3));
       $data['Medlemsgrupper'] = $this->Kontakter_model->medlemsgrupper();
@@ -52,22 +51,9 @@ class Kontakter extends CI_Controller {
     }
   }
 
-  public function slettperson() {
-    $this->load->model('Kontakter_model');
-    $this->Kontakter_model->slettperson($this->uri->segment(3));
-    redirect('kontakter/personer/');
-  }
-
   public function nyorganisasjon() {
-    $organisasjon = null;
-    $data['Organisasjon'] = $organisasjon;
+    $data['Organisasjon'] = null;
     $this->template->load('standard','kontakter/organisasjon',$data);
-  }
-
-  public function slettorganisasjon() {
-    $this->load->model('Kontakter_model');
-    $this->Kontakter_model->slettorganisasjon($this->uri->segment(3));
-    redirect('kontakter/organisasjoner/');
   }
 
   public function organisasjoner() {
@@ -98,29 +84,9 @@ class Kontakter extends CI_Controller {
   }
 
   public function medlemmer() {
-    $this->template->load('standard','kontakter/medlemmer');
-  }
-
-  public function hentmedlemmer() {
     $this->load->model('Kontakter_model');
-    $data['data'] = $this->Kontakter_model->medlemmer();
-    $this->load->view('json',$data);
-  }
-
-  public function hentfaggrupper() {
-    $this->load->model('Kontakter_model');
-    $data['data'] = $this->Kontakter_model->faggrupper();
-    $this->load->view('json',$data);
-  }
-
-  public function minfaggruppe() {
-    $this->load->model('Kontakter_model');
-    $this->load->model('Materiell_model');
-    $this->load->model('Prosjekter_model');
-    $data['Faggruppe'] = $this->Kontakter_model->faggruppe($this->uri->segment(3));
-    $data['Utstyrsliste'] = $this->Materiell_model->utstyrsliste(array('FaggruppeID' => $this->uri->segment(3)));
-    $data['Prosjekter'] = $this->Prosjekter_model->prosjekter(array('FaggruppeID' => $this->uri->segment(3)));
-    $this->template->load('standard','kontakter/minfaggruppe',$data);
+    $data['Personer'] = $this->Kontakter_model->medlemmer();
+    $this->template->load('standard','kontakter/medlemmer',$data);
   }
 
   public function medlemsgrupper() {
@@ -131,8 +97,30 @@ class Kontakter extends CI_Controller {
 
   public function medlemsgruppe() {
     $this->load->model('Kontakter_model');
-    $data['Gruppe'] = $this->Kontakter_model->medlemsgruppe($this->uri->segment(3));
-    $this->template->load('standard','kontakter/medlemsgruppe',$data);
+    $this->load->model('Kompetanse_model');
+    if ($this->input->post('GruppeLagre')) {
+      $ID = $this->input->post('GruppeID');
+      $gruppe['Navn'] = $this->input->post('Navn');
+      $gruppe['Beskrivelse'] = $this->input->post('Beskrivelse');
+      $gruppe['Alarmgruppe'] = $this->input->post('Alarmgruppe');
+      $gruppe = $this->Kontakter_model->medlemsgruppelagre($ID,$gruppe);
+      redirect('kontakter/medlemsgruppe/'.$gruppe['GruppeID']);
+    } elseif ($this->input->post('GruppeOppdaterKompetansekrav')) {
+      if ($this->input->post('NyttKompetanseKrav') > 0) {
+        $this->Kontakter_model->koblekompetansemedlemsgruppe($this->input->post('NyttKompetanseKrav'),$this->input->post('GruppeID'));
+      }
+      if ($this->input->post('FjernKompetansekrav')) {
+        $kompetanse = $this->input->post('FjernKompetansekrav');
+        for ($i=0; $i<sizeof($kompetanse); $i++) {
+          $this->Kontakter_model->fjernkompetansemedlemsgruppe($kompetanse[$i],$this->input->post('GruppeID'));
+        }
+      }
+      redirect('kontakter/medlemsgruppe/'.$this->input->post('GruppeID'));
+    } else {
+      $data['Gruppe'] = $this->Kontakter_model->medlemsgruppe($this->uri->segment(3));
+      $data['Kompetanseliste'] = $this->Kompetanse_model->kompetanseliste();
+      $this->template->load('standard','kontakter/medlemsgruppe',$data);
+    }
   }
 
   public function koblepersongruppe() {

@@ -33,5 +33,5 @@
     </tbody>
   </table>
 </div>
-<input type="submit" value="Registrere" />&nbsp;<input type="reset" value="Angre" />
+<input type="submit" value="Registrere" class="btn btn-primary" />&nbsp;<input type="reset" value="Angre" class="btn btn-default" />
 <?php echo form_close(); ?>
