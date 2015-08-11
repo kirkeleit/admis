@@ -1,0 +1,151 @@
+<?php
+  class Dadas_model extends CI_Model {
+
+    function sider() {
+      $resultat = $this->db->query("SELECT * FROM sider");
+      foreach ($resultat->result() as $rad) {
+        $data['ID'] = $rad->ID;
+        $data['Navn'] = $rad->Navn;
+        $data['SizeH'] = $rad->SizeH;
+        $data['SizeW'] = $rad->SizeW;
+        $data['DatoRegistrert'] = $rad->DatoRegistrert;
+        $data['DatoEndret'] = $rad->DatoEndret;
+        $elementer = $this->db->query("SELECT * FROM elementer WHERE (SideID=".$rad->ID.")");
+        $data['Elementer'] = $elementer->num_rows();
+        unset($elementer);
+        $sider[] = $data;
+        unset($data);
+      }
+      if (isset($sider)) {
+        return $sider;
+      }
+    }
+
+    function nyside($data) {
+      $this->db->query("INSERT INTO sider (Navn,SizeW,SizeH,Beskrivelse,DatoRegistrert,DatoEndret) VALUES ('".$data['Navn']."',".$data['SizeW'].",".$data['SizeH'].",'".$data['Beskrivelse']."','".date("Y-m-d H:i:s")."','".date("Y-m-d H:i:s")."')");
+    }
+
+    function side($ID) {
+      $resultat = $this->db->query("SELECT * FROM sider WHERE (ID=".$ID.") LIMIT 1");
+      if ($rad = $resultat->row()) {
+        $data['ID'] = $rad->ID;
+        $data['Navn'] = $rad->Navn;
+        $data['SizeH'] = $rad->SizeH;
+        $data['SizeW'] = $rad->SizeW;
+        $data['Beskrivelse'] = $rad->Beskrivelse;
+        $data['DatoRegistrert'] = $rad->DatoRegistrert;
+        $data['DatoEndret'] = $rad->DatoEndret;
+        return $data;
+      }
+    }
+
+    function endreside($data) {
+      $this->db->query("UPDATE sider SET Navn='".$data['Navn']."' WHERE ID=".$data['ID']);
+      $this->db->query("UPDATE sider SET SizeW='".$data['SizeW']."' WHERE ID=".$data['ID']);
+      $this->db->query("UPDATE sider SET SizeH='".$data['SizeH']."' WHERE ID=".$data['ID']);
+      $this->db->query("UPDATE sider SET Beskrivelse='".$data['Beskrivelse']."' WHERE ID=".$data['ID']);
+      $this->db->query("UPDATE sider SET DatoEndret='".date("Y-m-d H:i:s")."' WHERE ID=".$data['ID']);
+    }
+
+    function elementer($SideID = 0) {
+      if ($SideID == 0) {
+        $resultat = $this->db->query("SELECT * FROM elementer");
+      } else {
+        $resultat = $this->db->query("SELECT * FROM elementer WHERE (SideID=".$SideID.")");
+      }
+      foreach ($resultat->result() as $rad) {
+        $data['ID'] = $rad->ID;
+        $data['SideID'] = $rad->SideID;
+        $resultat2 = $this->db->query("SELECT * FROM sider WHERE (ID=".$rad->SideID.") LIMIT 1");
+        if ($rad2 = $resultat2->row()) {
+          $data['SideNavn'] = $rad2->Navn;
+          unset($rad2);
+        } else {
+          $data['SideNavn'] = "n/a";
+        }
+        unset($resultat2);
+        $data['TypeID'] = $rad->TypeID;
+        $data['Tittel'] = $rad->Tittel;
+        $data['PosX'] = $rad->PosX;
+        $data['PosY'] = $rad->PosY;
+        $data['SizeW'] = $rad->SizeW;
+        $data['SizeH'] = $rad->SizeH;
+        $data['MVerdiNr'] = $rad->MVerdiNr;
+        $data['MVerdiNrType'] = $rad->MVerdiNrType;
+        $data['DatoRegistrert'] = $rad->DatoRegistrert;
+        $data['DatoEndret'] = $rad->DatoEndret;
+        $Elementer[] = $data;
+        unset($data);
+      }
+      return $Elementer;
+    }
+
+    function nyttelement($data) {
+      $this->db->query("INSERT INTO elementer (SideID,TypeID,Tittel,PosX,PosY,SizeW,SizeH,MVerdiNr,MVerdiNrType,DatoRegistrert,DatoEndret) VALUES (".$data['SideID'].",".$data['TypeID'].",'".$data['Tittel']."',".$data['PosX'].",".$data['PosY'].",".$data['SizeW'].",".$data['SizeH'].",".$data['MVerdiNr'].",".$data['MVerdiNrType'].",'".date("Y-m-d H:i:s")."','".date("Y-m-d H:i:s")."')");
+      $data['ID'] = $this->db->insert_id();
+      return $data;
+    }
+
+    function lagreelement($data) {
+      if (isset($data['SideID'])) {
+        $this->db->query("UPDATE elementer SET SideID=".$data['SideID']." WHERE ID=".$data['ID']);
+      }
+      if (isset($data['TypeID'])) {
+        $this->db->query("UPDATE elementer SET TypeID=".$data['TypeID']." WHERE ID=".$data['ID']);
+      }
+      if (isset($data['Tittel'])) {
+        $this->db->query("UPDATE elementer SET Tittel='".$data['Tittel']."' WHERE ID=".$data['ID']);
+      }
+      if (isset($data['MVerdi'])) {
+        $this->db->query("UPDATE elementer SET MVerdiNr=".$data['MVerdi']." WHERE ID=".$data['ID']);
+      }
+      if (isset($data['MVerdiType'])) {
+        $this->db->query("UPDATE elementer SET MVerdiNrType=".$data['MVerdiType']." WHERE ID=".$data['ID']);
+      }
+
+      if (isset($data['PosX'])) {
+        $this->db->query("UPDATE elementer SET PosX=".$data['PosX']." WHERE ID=".$data['ID']);
+      }
+      if (isset($data['PosY'])) {
+        $this->db->query("UPDATE elementer SET PosY=".$data['PosY']." WHERE ID=".$data['ID']);
+      }
+      if (isset($data['SizeH'])) {
+        $this->db->query("UPDATE elementer SET SizeH=".$data['SizeH']." WHERE ID=".$data['ID']);
+      }
+      if (isset($data['SizeW'])) {
+        $this->db->query("UPDATE elementer SET SizeW=".$data['SizeW']." WHERE ID=".$data['ID']);
+      }
+      $this->db->query("UPDATE elementer SET DatoEndret='".date("Y-m-d H:i:s")."' WHERE ID=".$data['ID']);
+      return $data;
+    }
+
+    function slettelement($ID) {
+      $this->db->query("DELETE FROM elementer WHERE ID=".$ID);
+    }
+
+    function slettside($ID) {
+      $this->db->query("DELETE FROM elementer WHERE SideID=".$ID);
+      $this->db->query("DELETE FROM sider WHERE ID=".$ID);
+    }
+
+    function element($ID) {
+      $resultat = $this->db->query("SELECT * FROM elementer WHERE (ID=".$ID.") LIMIT 1");
+      if ($rad = $resultat->row()) {
+        $element['ID'] = $rad->ID;
+        $element['SideID'] = $rad->SideID;
+        $element['TypeID'] = $rad->TypeID;
+        $element['Tittel'] = $rad->Tittel;
+        $element['PosX'] = $rad->PosX;
+        $element['PosY'] = $rad->PosY;
+        $element['SizeH'] = $rad->SizeH;
+        $element['SizeW'] = $rad->SizeW;
+        $element['MVerdi'] = $rad->MVerdiNr;
+        $element['MVerdiType'] = $rad->MVerdiNrType;
+        $element['DatoRegistrert'] = $rad->DatoRegistrert;
+        $element['DatoEndret'] = $rad->DatoEndret;
+      }
+      return $element;
+    }
+
+  }
+?>

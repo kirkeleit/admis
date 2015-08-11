@@ -99,7 +99,9 @@
   }
 ?>
 
-    <div class="form-group">
+  </div>
+  <div class="panel-footer">
+    <div class="input-group">
       <div class="btn-group">
         <input type="submit" class="btn btn-primary" value="Lagre" name="UtgiftLagre" />
         <input type="submit" class="btn btn-danger" value="Slett" name="UtgiftSlett" />

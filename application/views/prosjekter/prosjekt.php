@@ -91,7 +91,9 @@
     <span><?php echo ($Prosjekt['Status'] == '' ? 'Under registrering' : $Prosjekt['Status']); ?></span>
   </div>
 
-    <div class="form-group">
+  </div>
+  <div class="panel-footer">
+    <div class="input-group">
       <div class="btn-group">
         <input type="submit" value="Lagre" name="ProsjektLagre" class="btn btn-primary" />
         <input type="submit" value="Slett" name="ProsjektSlett" class="btn btn-danger" />
@@ -137,11 +139,11 @@
 <?php foreach ($Innkjopsordrer as $Ordre) { ?>
 <?php $TotalOrdresum = $TotalOrdresum + $Ordre['OrdreSum']; ?>
           <tr>
-            <td><?php echo date('d.m.Y',strtotime($Ordre['DatoRegistrert'])); ?></td>
-            <td><?php echo $Ordre['Referanse']; ?></td>
-            <td><?php echo $Ordre['PersonAnsvarligNavn']; ?></td>
-            <td><?php echo 'kr '.number_format($Ordre['OrdreSum'],2,',','.'); ?></td>
-            <td><?php echo $Ordre['Status']; ?></td>
+            <td><?php echo anchor('/okonomi/innkjopsordre/'.$Ordre['OrdreID'],date('d.m.Y',strtotime($Ordre['DatoRegistrert']))); ?></td>
+            <td><?php echo anchor('/okonomi/innkjopsordre/'.$Ordre['OrdreID'],$Ordre['Referanse']); ?></td>
+            <td><?php echo anchor('/okonomi/innkjopsordre/'.$Ordre['OrdreID'],$Ordre['PersonAnsvarligNavn']); ?></td>
+            <td><?php echo anchor('/okonomi/innkjopsordre/'.$Ordre['OrdreID'],'kr '.number_format($Ordre['OrdreSum'],2,',','.')); ?></td>
+            <td><?php echo anchor('/okonomi/innkjopsordre/'.$Ordre['OrdreID'],$Ordre['Status']); ?></td>
           </tr>
 <?php } ?>
           <tr>

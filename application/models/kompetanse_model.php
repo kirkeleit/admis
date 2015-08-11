@@ -32,9 +32,9 @@
       return $faggruppe;
     }
 
-    var $KompetanseType = array(0 => 'RK-kurs',1 => 'RK-erfaring',2 => 'Sertifikat',3 => 'Intern oppplæring');
+    var $KompetanseType = array(0 => 'RK-kurs',1 => 'RK-kompetanse',2 => 'Sertifikat',3 => 'Intern oppplæring',4 => 'Språk',5 => 'Sivil kompetanse');
     function kompetanseliste() {
-      $rkompetanseliste = $this->db->query("SELECT KompetanseID,TypeID,Navn,Beskrivelse,Timer,Gyldighet,(SELECT COUNT(*) FROM PersonXKompetanse WHERE (PersonXKompetanse.KompetanseID=k.KompetanseID)) AS Antall FROM Kompetanse k ORDER BY TypeID,Navn");
+      $rkompetanseliste = $this->db->query("SELECT KompetanseID,TypeID,Navn,Beskrivelse,Timer,Gyldighet,(SELECT COUNT(*) FROM PersonXKompetanse WHERE (PersonXKompetanse.KompetanseID=k.KompetanseID)) AS Antall FROM Kompetanse k WHERE (AktivtKurs=1) ORDER BY TypeID,Navn");
       foreach ($rkompetanseliste->result_array() as $kompetanse) {
         $kompetanse['TypeNavn'] = $this->KompetanseType[$kompetanse['TypeID']];
         $kompetanseliste[] = $kompetanse;
@@ -48,6 +48,8 @@
     function kompetanseinfo($ID) {
       $rkompetanseliste = $this->db->query("SELECT KompetanseID,TypeID,Navn,Beskrivelse,Timer,Gyldighet FROM Kompetanse WHERE (KompetanseID=".$ID.") LIMIT 1");
       if ($kompetanse = $rkompetanseliste->row_array()) {
+        $rpersoner = $this->db->query("SELECT Personer.PersonID,Fornavn,Etternavn,Mobilnr,Epost,DatoGodkjent,Kommentar FROM Personer,PersonXKompetanse WHERE (PersonXKompetanse.PersonID=Personer.PersonID) AND (PersonXKompetanse.KompetanseID=".$ID.")");
+        $kompetanse['Personer'] = $rpersoner->result_array();
         return $kompetanse;
       }
     }

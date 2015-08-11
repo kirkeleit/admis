@@ -3,7 +3,7 @@
 <?php echo form_open('kontakter/medlemsgruppe/'.$Gruppe['GruppeID']); ?>
 <input type="hidden" name="GruppeID" id="GruppeID" value="<?php echo set_value('GruppeID',$Gruppe['GruppeID']); ?>" />
 <div class="panel panel-default">
-  <div class="panel-heading">Medlemsgruppe</div>
+  <div class="panel-heading">&nbsp;</div>
 
   <div class="panel-body">
     <div class="form-group">
@@ -22,8 +22,10 @@
         Alarmgruppe
       </label>
     </div>
+  </div>
 
-    <div class="form-group">
+  <div class="panel-footer">
+    <div class="input-group">
       <input type="submit" class="btn btn-primary" value="Lagre" name="GruppeLagre" />
     </div>
   </div>
@@ -80,7 +82,7 @@
 ?>
         </select>
         <span class="input-group-btn">
-          <input type="submit" class="btn btn-default" name="GruppeOppdaterKompetansekrav" value="Legg til" />
+          <input type="submit" class="btn btn-default" name="GruppeOppdaterKompetansekrav" value="Legg til/fjern" />
         </span>
       </div>
     </div>
@@ -100,8 +102,7 @@
             <th>Mobilnr</th>
             <th>Epost</th>
             <th>Alder</th>
-            <th>Godkjent</th>
-            <th>Fjern</th>
+            <th class="text-center">Godkjent</th>
           </tr>
         </thead>
         <tbody>
@@ -114,15 +115,14 @@
             <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Mobilnr']); ?></td>
             <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Epost']); ?></td>
             <td><?php echo anchor('/kontakter/person/'.$Person['PersonID'],$Person['Alder']); ?></td>
-            <td class="<?php echo ($Person['Godkjent'] == 0 ? 'danger' : 'success'); ?>"><?php echo anchor('/kontakter/person/'.$Person['PersonID'],(isset($Gruppe['Kompetansekrav']) ? ($Person['Godkjent'] == 1 ? 'Ja' : 'Nei') : '-')); ?></td>
-            <td class="text-center"><input type="checkbox"></td>
+            <td class="text-center <?php echo ($Person['Godkjent'] == 0 ? 'danger' : 'success'); ?>"><?php echo anchor('/kontakter/person/'.$Person['PersonID'],(isset($Gruppe['Kompetansekrav']) ? ($Person['Godkjent'] == 1 ? 'Ja' : 'Nei') : '-')); ?></td>
           </tr>
 <?php
     }
   } else {
 ?>
           <tr>
-            <td colspan="6">Ingen medlemmer i gruppen.</td>
+            <td colspan="5">Ingen medlemmer i gruppen.</td>
           </tr>
 <?php
   }

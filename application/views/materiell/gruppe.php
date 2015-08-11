@@ -15,8 +15,10 @@
       <label for="Beskrivelse">Beskrivelse:</label>
       <textarea name="Beskrivelse" id="Beskrivelse" class="form-control"><?php echo set_value('Beskrivelse',$Gruppe['Beskrivelse']); ?></textarea>
     </div>
+  </div>
 
-    <div class="form-group">
+  <div class="panel-footer">
+    <div class="input-group">
       <input type="submit" class="btn btn-primary" value="Lagre gruppe" />
     </div>
   </div>

@@ -20,8 +20,8 @@
 ?>
       <tr>
         <td><?php echo anchor('/okonomi/inntekt/'.$Inntekt['InntektID'],date('d.m.Y',strtotime($Inntekt['DatoBokfort']))); ?></td>
-        <td><?php echo anchor('/okonomi/inntekt/'.$Inntekt['InntektID'],$Inntekt['AktivitetID'],'title="'.$Inntekt['AktivitetNavn'].'"'); ?></td>
-        <td><?php echo anchor('/okonomi/inntekt/'.$Inntekt['InntektID'],$Inntekt['KontoID'],'title="'.$Inntekt['KontoNavn'].'"'); ?></td>
+        <td><?php echo anchor('/okonomi/inntekt/'.$Inntekt['InntektID'],($Inntekt['AktivitetID'] != '' ? $Inntekt['AktivitetID'] : '&nbsp;'),'title="'.$Inntekt['AktivitetNavn'].'"'); ?></td>
+        <td><?php echo anchor('/okonomi/inntekt/'.$Inntekt['InntektID'],($Inntekt['KontoID'] > 0 ? $Inntekt['KontoID'] : '&nbsp;'),'title="'.$Inntekt['KontoNavn'].'"'); ?></td>
         <td><?php echo ($Inntekt['PersonID'] > 0 ? anchor('/okonomi/inntekt/'.$Inntekt['InntektID'],$Inntekt['PersonInitialer'],'title="'.$Inntekt['PersonNavn'].'"') : ''); ?></td>
         <td><?php echo anchor('/okonomi/inntekt/'.$Inntekt['InntektID'],$Inntekt['Beskrivelse']); ?></a></td>
         <td class="text-right"><?php echo anchor('/okonomi/inntekt/'.$Inntekt['InntektID'],'kr '.number_format($Inntekt['Belop'],2,',','.')); ?></td>

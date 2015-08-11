@@ -49,7 +49,9 @@
       <label for="Notater">Notater:</label>
       <textarea name="Notater" class="form-control"><?php echo set_value('Notater',$Faktura['Notater']); ?></textarea>
     </div>
+  </div>
 
+  <div class="panel-footer">
     <div class="input-group">
       <div class="btn-group">
 <?php if ($Faktura['StatusID'] == 0) { ?>
@@ -71,7 +73,6 @@
 <?php } ?>
       </div>
     </div>
-
   </div>
 </div>
 

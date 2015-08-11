@@ -20,6 +20,7 @@
   $AMeny = array(array('Navn' => 'Oversikt', 'URL' => 'oversikt', 'UAP' => 300),
                  array('Navn' => 'Fakturaer', 'URL' => 'fakturaer', 'UAP' => 300),
                  array('Navn' => 'Innkjøpsordrer', 'URL' => 'innkjopsordrer', 'UAP' => 300, 'NyLink' => 'nyinnkjopsordre'),
+                 array('Navn' => 'Trenger støtte', 'URL' => 'trengerstotte', 'UAP' => 300),
                  array('Navn' => 'Varemottak', 'URL' => 'varemottak', 'UAP' => 300),
                  array('Navn' => 'Utgifter', 'URL' => 'utgifter', 'UAP' => 300, 'NyLink' => 'nyutgift'),
                  array('Navn' => 'Inntekter', 'URL' => 'inntekter', 'UAP' => 300, 'NyLink' => 'nyinntekt'),

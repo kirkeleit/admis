@@ -139,8 +139,10 @@
   }
 ?>
     </div>
+  </div>
 
-    <div class="form-group">
+  <div class="panel-footer">
+    <div class="input-group">
       <div class="btn-group">
 <?php if ($Utlegg['StatusID'] < 1) { ?>
         <input type="submit" class="btn btn-primary" value="Lagre" name="UtleggLagre" />

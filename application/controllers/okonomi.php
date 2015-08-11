@@ -377,6 +377,12 @@ class okonomi extends CI_Controller {
     $this->template->load('standard','okonomi/faktura',$data);
   }
 
+  public function trengerstotte() {
+    $this->load->model('Prosjekter_model');
+    $data['Prosjekter'] = $this->Prosjekter_model->prosjekter(array('VisAlle' => 1,'Finansiering' => 1));
+    $this->template->load('standard','okonomi/trengerstotte',$data);
+  }
+
 }
 
 /* End of file admin.php */

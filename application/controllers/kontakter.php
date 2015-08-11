@@ -102,7 +102,7 @@ class Kontakter extends CI_Controller {
       $ID = $this->input->post('GruppeID');
       $gruppe['Navn'] = $this->input->post('Navn');
       $gruppe['Beskrivelse'] = $this->input->post('Beskrivelse');
-      $gruppe['Alarmgruppe'] = $this->input->post('Alarmgruppe');
+      if ($this->input->post('Alarmgruppe')) { $gruppe['Alarmgruppe'] = 1; } else { $gruppe['Alarmgruppe'] = 0; }
       $gruppe = $this->Kontakter_model->medlemsgruppelagre($ID,$gruppe);
       redirect('kontakter/medlemsgruppe/'.$gruppe['GruppeID']);
     } elseif ($this->input->post('GruppeOppdaterKompetansekrav')) {
@@ -121,14 +121,6 @@ class Kontakter extends CI_Controller {
       $data['Kompetanseliste'] = $this->Kompetanse_model->kompetanseliste();
       $this->template->load('standard','kontakter/medlemsgruppe',$data);
     }
-  }
-
-  public function koblepersongruppe() {
-    $this->load->model('Kontakter_model');
-    $PersonID = $this->input->post('PersonID');
-    $GruppeID = $this->input->post('GruppeID');
-    $this->Kontakter_model->koblepersongruppe($PersonID,$GruppeID);
-    redirect('kontakter/person/'.$PersonID);
   }
 
 }

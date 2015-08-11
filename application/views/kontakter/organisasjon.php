@@ -46,8 +46,10 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="form-group">
+  <div class="panel-footer">
+    <div class="input-group">
       <div class="btn-group" role="group">
         <input type="submit" class="btn btn-primary" value="Lagre" id="LagreOrganisasjon" name="OrganisasjonLagre" />
       </div>

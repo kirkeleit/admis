@@ -54,8 +54,10 @@
         <option value="2"<?php echo set_select('StatusID',2,($Oppgave['StatusID'] == 2) ? TRUE : FALSE); ?>>Fullført</option>
       </select>
     </div>
+  </div>
 
-    <div class="form-group">
+  <div class="panel-footer">
+    <div class="input-group">
       <div class="btn-group">
         <input type="submit" class="btn btn-primary" value="Lagre" name="OppgaveLagre" />
         <input type="submit" class="btn btn-danger" value="Slett" name="OppgaveSlett" />

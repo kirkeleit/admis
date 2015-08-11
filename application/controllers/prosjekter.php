@@ -66,7 +66,7 @@ class Prosjekter extends CI_Controller {
       $data['Faggrupper'] = $this->Kompetanse_model->faggrupper();
       $data['Medlemmer'] = $this->Kontakter_model->medlemmer();
       $data['Prosjekt'] = $this->Prosjekter_model->prosjekt($this->uri->segment(3));
-      $data['Innkjopsordrer'] = $this->Okonomi_model->innkjopsordrer(array('ProsjektID' => $this->uri->segment(3)));
+      $data['Innkjopsordrer'] = $this->Okonomi_model->innkjopsordrer(array('ProsjektID' => $this->uri->segment(3),'VisAlle' => 1));
       $data['Utgifter'] = $this->Okonomi_model->utgifter(array('ProsjektID' => $this->uri->segment(3)));
       $this->template->load('standard','prosjekter/prosjekt',$data);
     }

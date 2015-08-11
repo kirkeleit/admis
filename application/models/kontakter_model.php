@@ -22,7 +22,7 @@
     }
 
     function person($ID) {
-      $rpersoner = $this->db->query("SELECT PersonID,Fornavn,Etternavn,DatoFodselsdato,Mobilnr,Epost,AdresseID,Medlem,Initialer,Relasjonsnummer,DatoMedlemsdato FROM Personer WHERE (PersonID=".$ID.") LIMIT 1");
+      $rpersoner = $this->db->query("SELECT PersonID,Fornavn,Etternavn,DatoFodselsdato,Mobilnr,Epost,AdresseID,Medlem,Initialer,Relasjonsnummer,DatoMedlemsdato,KovaPrimKey FROM Personer WHERE (PersonID=".$ID.") LIMIT 1");
       if ($person = $rpersoner->row_array()) {
         $person['Adresser'] = $this->personadresser($person['PersonID']);
         $person['Medlemsgrupper'] = $this->medlemsgrupper($person['PersonID']);
@@ -205,6 +205,7 @@
     }
 
     function fjernkompetansemedlemsgruppe($KompetanseID,$GruppeID) {
+      echo $KompetanseID.":".$GruppeID;
       $this->db->query("DELETE FROM MedlemsgruppeKompetanseKrav WHERE KompetanseID=".$KompetanseID." AND GruppeID=".$GruppeID);
     }
 

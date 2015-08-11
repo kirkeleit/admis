@@ -8,7 +8,7 @@
 
     <div class="form-group">
       <label>Saksnummer:</label>
-      <span class="form-control-static"><?php echo $Sak['SaksAr']."/".$Sak['SaksNummer']; ?></span>
+      <p class="form-control-static"><?php echo $Sak['SaksAr']."/".$Sak['SaksNummer']; ?></p>
     </div>
 
     <div class="form-group">
@@ -39,10 +39,12 @@
 
     <div class="form-group">
       <label>Status:</label>
-      <span class="form-control-static"><?php if (isset($Sak['Status'])) { echo $Sak['Status']; } else { echo "&nbsp;"; } ?></span>
+      <p class="form-control-static"><?php if (isset($Sak['Status'])) { echo $Sak['Status']; } else { echo "&nbsp;"; } ?></p>
     </div>
+  </div>
 
-    <div class="form-group">
+  <div class="panel-footer">
+    <div class="input-group">
       <input type="submit" class="btn btn-primary" name="SakLagre" value="Lagre" <?php if (!in_array('801',$UABruker['UAP'])) { echo "disabled "; } ?>/>
 <?php if ($Sak['SaksNummer'] == 0) { ?>
       <input type="button" class="btn btn-success" value="Godkjenn" onclick="javascript:document.location.href='<?php echo site_url(); ?>/raadet/lagsaksnummer/?sid=<?php echo $Sak['SakID']; ?>';" <?php if (!in_array('803',$UABruker['UAP'])) { echo "disabled "; } ?>/>

@@ -1,5 +1,15 @@
+<?php
+  if ($Person['KovaPrimKey'] != '') {
+    $KovaAktiv = 1;
+  } else {
+    $KovaAktiv = 0;
+  }
+?>
 <h3 class="sub-header">Persondetaljer</h3>
 
+<?php if ($KovaAktiv == 1) { ?>
+<div class="alert alert-warning" role="alert">Denne personen er og registrert på kova.no. De feltene som er deaktivert her må endres på kova.no.</div>
+<?php } ?>
 <?php echo form_open('kontakter/person/'.$Person['PersonID']); ?>
 <input type="hidden" name="PersonID" id="PersonID" value="<?php echo set_value('PersonID',$Person['PersonID']); ?>" />
 <input type="hidden" name="AdresseID" id="AdresseID" value="<?php echo set_value('AdresseID',$Person['Adresser'][0]['AdresseID']); ?>" />
@@ -9,8 +19,8 @@
   <div class="panel-body">
     <div class="form-group">
       <label for="Fornavn">Navn:</label>
-      <input type="text" class="form-control" name="Fornavn" id="Fornavn" value="<?php echo set_value('Fornavn',$Person['Fornavn']); ?>" required />
-      <input type="text" class="form-control" name="Etternavn" id="Etternavn" value="<?php echo set_value('Etternavn',$Person['Etternavn']); ?>" required />
+      <input type="text" class="form-control" name="Fornavn" id="Fornavn" placeholder="Fornavn" value="<?php echo set_value('Fornavn',$Person['Fornavn']); ?>" required <?php echo ($KovaAktiv == 1 ? ' readonly' : ''); ?> />
+      <input type="text" class="form-control" name="Etternavn" id="Etternavn" placeholder="Etternavn" value="<?php echo set_value('Etternavn',$Person['Etternavn']); ?>" required <?php echo ($KovaAktiv == 1 ? ' readonly' : ''); ?> />
     </div>
 
     <div class="form-group">
@@ -20,17 +30,17 @@
 
     <div class="form-group">
       <label for="DatoFodselsdato">Fødselsdato:</label>
-      <input type="date" class="form-control" name="DatoFodselsdato" id="DatoFodselsdato" value="<?php echo set_value('DatoFodselsdato',($Person['DatoFodselsdato'] != '0000-00-00' ? ($Person['DatoFodselsdato'] == '' ? '' : date("d.m.Y",strtotime($Person['DatoFodselsdato']))) : '')); ?>" />
+      <input type="date" class="form-control" name="DatoFodselsdato" id="DatoFodselsdato" value="<?php echo set_value('DatoFodselsdato',($Person['DatoFodselsdato'] != '0000-00-00' ? ($Person['DatoFodselsdato'] == '' ? '' : date("d.m.Y",strtotime($Person['DatoFodselsdato']))) : '')); ?>" <?php echo ($KovaAktiv == 1 ? 'readonly' : ''); ?> />
     </div>
 
     <div class="form-group">
       <label for="Mobilnr">Mobilnummer:</label>
-      <input type="number" class="form-control" name="Mobilnr" id="Mobilnr" value="<?php echo set_value('Mobilnr',$Person['Mobilnr']); ?>" />
+      <input type="number" class="form-control" name="Mobilnr" id="Mobilnr" value="<?php echo set_value('Mobilnr',$Person['Mobilnr']); ?>"<?php echo ($KovaAktiv == 1 ? ' readonly' : ''); ?> />
     </div>
 
     <div class="form-group">
       <label for="Epost">E-postadresse:</label>
-      <input type="email" class="form-control" name="Epost" id="Epost" value="<?php echo set_value('Epost',$Person['Epost']); ?>" />
+      <input type="email" class="form-control" name="Epost" id="Epost" value="<?php echo set_value('Epost',$Person['Epost']); ?>"<?php echo ($KovaAktiv == 1 ? ' readonly' : ''); ?> />
     </div>
   </div>
 </div>
@@ -68,12 +78,12 @@
 
     <div class="form-group">
       <label for="Relasjonsnummer">Relasjonsnr:</label>
-      <input type="number" class="form-control" name="Relasjonsnummer" id="Relasjonsnummer" value="<?php echo set_value('Relasjonsnummer',$Person['Relasjonsnummer']); ?>" />
+      <input type="number" class="form-control" name="Relasjonsnummer" id="Relasjonsnummer" value="<?php echo set_value('Relasjonsnummer',$Person['Relasjonsnummer']); ?>"<?php echo ($KovaAktiv == 1 ? ' readonly' : ''); ?> />
     </div>
 
     <div class="form-group">
       <label for="DatoMedlemsdato">Medlem fra:</label>
-      <input type="date" class="form-control" name="DatoMedlemsdato" id="DatoMedlemsdato" value="<?php echo set_value('DatoMedlemsdato',($Person['DatoMedlemsdato'] != '0000-00-00' ? ($Person['DatoMedlemsdato'] == '' ? '' : date("d.m.Y",strtotime($Person['DatoMedlemsdato']))) : '')); ?>" />
+      <input type="date" class="form-control" name="DatoMedlemsdato" id="DatoMedlemsdato" value="<?php echo set_value('DatoMedlemsdato',($Person['DatoMedlemsdato'] != '0000-00-00' ? ($Person['DatoMedlemsdato'] == '' ? '' : date("d.m.Y",strtotime($Person['DatoMedlemsdato']))) : '')); ?>"<?php echo ($KovaAktiv == 1 ? ' readonly' : ''); ?> />
     </div>
   </div>
 </div>

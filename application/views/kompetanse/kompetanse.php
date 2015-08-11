@@ -35,9 +35,47 @@
       <label for="Beskrivelse">Beskrivelse:</label>
       <textarea class="form-control" name="Beskrivelse"><?php echo set_value('Beskrivelse',$Kompetanse['Beskrivelse']); ?></textarea>
     </div>
-
-    <div class="form-group">
+  </div>
+  <div class="panel-footer">
+    <div class="input-group">
       <input type="submit" class="btn btn-primary" value="Lagre" name="KompetanseLagre" />
+    </div>
+  </div>
+</div>
+
+<div class="panel panel-default">
+  <div class="panel-heading">Personer med kompetansen</div>
+
+  <div class="panel-body">
+    <div class="table-responsive">
+      <table class="table table-condensed table-hover table-striped">
+        <thead>
+          <tr>
+            <th>Navn</th>
+            <th>Mobilnummer</th>
+            <th>Epostadresse</th>
+            <th>Godkjent</th>
+            <th>Kommentar</th>
+          </tr>
+        </thead>
+        <tbody>
+<?php
+  if (isset($Kompetanse['Personer'])) {
+    foreach ($Kompetanse['Personer'] as $Person) {
+?>
+          <tr>
+            <td><?php echo $Person['Fornavn']." ".$Person['Etternavn']; ?></td>
+            <td><?php echo $Person['Mobilnr']; ?></td>
+            <td><?php echo $Person['Epost']; ?></td>
+            <td><?php echo $Person['DatoGodkjent']; ?></td>
+            <td><?php echo $Person['Kommentar']; ?></td>
+          </tr>
+<?php
+    }
+  }
+?>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

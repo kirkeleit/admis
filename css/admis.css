@@ -104,3 +104,6 @@ body {
   border-radius: 50%;
 }
 
+.panel-heading {
+  font-weight: bold;
+}

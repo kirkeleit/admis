@@ -23,6 +23,7 @@
     <div class="form-group">
       <label for="AktivitetID">Aktivitet:</label>
       <select name="AktivitetID" class="form-control">
+        <option value="" <?php echo set_select('AktivitetID',0,($Inntekt['AktivitetID'] == '') ? TRUE : FALSE); ?>>(ikke valgt)</option>
 <?php
   foreach ($Aktiviteter as $Aktivitet) {
 ?>
@@ -36,6 +37,7 @@
     <div class="form-group">
       <label for="KontoID">Konto:</label>
       <select name="KontoID" class="form-control">
+        <option value="0" <?php echo set_select('KontoID',0,($Inntekt['KontoID'] == 0) ? TRUE : FALSE); ?>>(ikke valgt)</option>
 <?php
   foreach ($Kontoer as $Konto) {
 ?>
@@ -83,8 +85,10 @@
       <label for="Belop">Beløp:</label>
       <input type="number" class="form-control" name="Belop" value="<?php echo set_value('Belop',$Inntekt['Belop']); ?>" step="any" />
     </div>
+  </div>
 
-    <div class="form-group">
+  <div class="panel-footer">
+    <div class="input-group">
       <div class="btn-group">
         <input type="submit" class="btn btn-primary" name="InntektLagre" value="Lagre" />
         <input type="submit" class="btn btn-danger" name="InntektSlett" value="Slett" />

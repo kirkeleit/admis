@@ -20,8 +20,10 @@
       <label for="Beskrivelse">Beskrivelse:</label>
       <textarea name="Beskrivelse" class="form-control" id="Beskrivelse"><?php echo set_value('Beskrivelse',$Lagerplass['Beskrivelse']); ?></textarea>
     </div>
+  </div>
 
-    <div class="form-group">
+  <div class="panel-footer">
+    <div class="input-group">
       <input type="submit" class="btn btn-primary" value="Lagre lagerplass" />
     </div>
   </div>

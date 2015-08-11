@@ -10,8 +10,10 @@
       <label for="Navn">Navn:</label>
       <input type="text" class="form-control" name="Navn" id="Navn" value="<?php echo set_value('Navn',$Produsent['Navn']); ?>" />
     </div>
+  </div>
 
-    <div class="form-group">
+  <div class="panel-footer">
+    <div class="input-group">
       <input type="submit" class="btn btn-primary" value="Lagre produsent" />
     </div>
   </div>

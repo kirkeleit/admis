@@ -69,7 +69,7 @@
   </div>
 
   <div class="panel-footer">
-    <div class="form-group">
+    <div class="input-group">
       <div class="btn-group">
         <input type="submit" name="OrdreLagre" class="btn btn-primary" value="Lagre" <?php if (isset($Ordre['StatusID']) and ($Ordre['StatusID'] != 1)) { echo 'disabled '; } ?>/>
         <input type="submit" name="OrdreSlett" class="btn btn-danger" value="Slett" <?php if ($Ordre['StatusID'] != 1) { echo 'disabled '; } ?>/>
@@ -119,13 +119,15 @@
     <div class="table-responsive">
       <table class="table table-striped table-hover table-condensed">
         <thead>
-          <th>Varenummer</th>
-          <th>Varenavn</th>
-          <th>Pris</th>
-          <th>Antall</th>
-          <th>Sum</th>
-          <th>Levert</th>
-          <th>&nbsp;</th>
+          <tr>
+            <th>Varenummer</th>
+            <th>Varenavn</th>
+            <th>Pris</th>
+            <th>Antall</th>
+            <th>Sum</th>
+            <th>Levert</th>
+            <th>&nbsp;</th>
+          </tr>
         </thead>
         <tbody>
 <?php
